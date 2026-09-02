@@ -390,10 +390,11 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     color: var(--text-muted);
   }
 
-  :global(.references-box a) {
-    color: var(--text-muted);
-    text-decoration: underline;
-  }
+:global(.references-box a) {
+  color: var(--text-muted);
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
 
   .article-footer {
     margin-top: 40px;
