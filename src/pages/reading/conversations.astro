@@ -1,0 +1,326 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Search from '../../components/Search.astro';
+
+// 使用 glob 导入获取所有 markdown 文件
+const allModules = import.meta.glob('/src/content/articles/*.md', { eager: true });
+
+// 处理和过滤文章
+const articles = Object.entries(allModules)
+  .map(([path, module]: [string, any]) => {
+    const filename = path.split('/').pop()?.replace('.md', '') || '';
+    const frontmatter = module.frontmatter || {};
+    
+    // 只包含 conversations 类型且不是模板的文章
+    if (frontmatter.type !== 'conversations' || filename.includes('TEMPLATE')) {
+      return null;
+    }
+    
+    return {
+      filename,
+      slug: filename,
+      title: frontmatter.title,
+      date: frontmatter.date,
+      author: frontmatter.author,
+      tags: frontmatter.tags || [],
+      excerpt: frontmatter.excerpt,
+      type: frontmatter.type,
+      easyReadSlug: frontmatter.easyReadSlug,
+    };
+  })
+  .filter((a: any) => a !== null)
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// 提取所有唯一的 tag
+const allTags = Array.from(
+  new Set(articles.flatMap((a: any) => a.tags || []))
+).sort();
+---
+
+<BaseLayout title="Neuroweave 神经丝织者 - NW 访谈">
+  <Header subtitle="这里可以阅读我们与其他自倡导群体、公益团体及实践者的对话过程。">
+    <h1 slot="title">NW 访谈</h1>
+  </Header>
+
+  <main class="translations-container">
+    <!-- 主内容区域 -->
+    <div class="content-area">
+      <!-- 文章列表 -->
+      <div class="articles-list" id="articles-list">
+        {articles.length > 0 ? (
+          articles.map((article: any) => {
+            const tagsStr = (article.tags || []).join(',');
+            const searchContent = `${article.title} ${article.excerpt || ''}`.toLowerCase();
+            
+            return (
+              <article 
+                class="article-card" 
+                data-tags={tagsStr}
+                data-content={searchContent}
+              >
+                <div class="card-header">
+                  <h3>{article.title}</h3>
+                  <p class="meta">{article.date}</p>
+                </div>
+                <div class="card-body">
+                  <p class="excerpt">{article.excerpt}</p>
+                  {article.tags && article.tags.length > 0 && (
+                    <div class="tags-inline">
+                      {article.tags.map((tag: string) => (
+                        <span class="tag-badge">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div class="read-links">
+                    <a href={`/reading/article/${article.slug}`} class="read-more">阅读完整版 →</a>
+                    <a href={`/reading/article/${article.easyReadSlug || article.slug}`} class="read-more read-more-secondary">阅读易读版 →</a>
+                  </div>
+                </div>
+              </article>
+            );
+          })
+        ) : (
+          <p class="no-articles">暂无访谈</p>
+        )}
+      </div>
+    </div>
+
+    <!-- 右侧 搜索 + Tag 过滤框架 -->
+    <aside class="sidebar">
+      <div class="search-section">
+        <Search />
+      </div>
+
+      <div class="tag-filter">
+        <h3>标签</h3>
+        <div class="tag-links">
+          <a href="#" class="tag-link active" data-tag="all">全部</a>
+          {allTags.map((tag: string) => (
+            <a href="#" class="tag-link" data-tag={tag}>#{tag}</a>
+          ))}
+        </div>
+      </div>
+    </aside>
+  </main>
+</BaseLayout>
+
+<style>
+  .translations-container {
+    display: flex;
+    gap: 32px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .content-area {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-section {
+    position: relative;
+    margin-bottom: 32px;
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .no-articles {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 20px;
+  }
+
+  .article-card {
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-header {
+    background-color: var(--card-header-bg, #F0E2B4);
+    padding: 14px 18px;
+  }
+
+  .card-header h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  .meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .card-body {
+    background-color: var(--bg-card);
+    padding: 20px;
+  }
+
+  .excerpt {
+    margin: 0 0 12px 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .tags-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .tag-badge {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .read-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .read-more {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: inline-block;
+  }
+
+  .read-more:hover {
+    transform: translateX(4px);
+    text-decoration: underline;
+  }
+
+  .read-more-secondary {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* 侧边栏 */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .search-section {
+    margin-bottom: 16px;
+  }
+
+  .tag-filter {
+    background-color: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    position: sticky;
+    top: 20px;
+    aspect-ratio: 1 / 1;
+    overflow-y: auto;
+  }
+
+  .tag-filter h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .tag-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+
+  .tag-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .tag-link:hover {
+    text-decoration: underline;
+  }
+
+  .tag-link.active {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .translations-container {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      width: 100%;
+    }
+
+    .tag-filter {
+      position: static;
+      aspect-ratio: auto;
+    }
+  }
+</style>
+
+<script>
+  // 搜索和过滤功能 - 本地 Tag 过滤（Pagefind 处理全文搜索）
+  const articlesList = document.getElementById('articles-list');
+  const tagLinks = document.querySelectorAll('.tag-link') as NodeListOf<HTMLAnchorElement>;
+
+  let currentTag = 'all';
+
+  function filterArticles() {
+    if (!articlesList) return;
+    
+    const articles = articlesList.querySelectorAll('.article-card');
+    
+    articles.forEach(article => {
+      const tags = (article.getAttribute('data-tags') || '').split(',').filter(t => t);
+      
+      // 检查 tag 过滤
+      const tagMatch = currentTag === 'all' || tags.includes(currentTag);
+      
+      // 显示或隐藏文章
+      (article as HTMLElement).style.display = tagMatch ? 'block' : 'none';
+    });
+  }
+
+  // Tag 链接事件
+  tagLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      // 移除其他链接的 active 类
+      tagLinks.forEach(l => l.classList.remove('active'));
+      // 为当前链接添加 active 类
+      link.classList.add('active');
+      
+      currentTag = link.getAttribute('data-tag') || 'all';
+      filterArticles();
+    });
+  });
+</script>

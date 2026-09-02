@@ -1,0 +1,93 @@
+---
+/* 顶栏导航：所有页面完全一致 */
+---
+<nav>
+  <div class="page-width">
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <span>｜</span>
+      <a href="/about">关于我们</a>
+      <span>｜</span>
+      <a href="/reading/translations">NW 翻译</a>
+      <span>｜</span>
+      <a href="/reading/overviews">NW 概述</a>
+      <span>｜</span>
+      <a href="/reading/conversations">NW 访谈</a>
+      <span>｜</span>
+      <a href="/keywords">关键词整理</a>
+      <span>｜</span>
+      <a href="/feedback">反馈</a>
+    </div>
+    <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-pressed="false">护眼模式</button>
+  </div>
+</nav>
+
+<style>
+  nav {
+    background-color: var(--bg-nav);
+    padding: 16px 0;
+    font-size: 0.95rem;
+  }
+  nav .page-width {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+  nav a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+  nav span {
+    color: #B5A886;
+    user-select: none;
+  }
+  .theme-toggle-btn {
+    background-color: transparent;
+    border: 1px solid var(--accent-border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--text-primary);
+  }
+  .theme-toggle-btn[aria-pressed="true"] {
+    background-color: var(--text-primary);
+    color: var(--bg-card);
+    border-color: var(--text-primary);
+  }
+</style>
+
+<script>
+  const themeBtn = document.getElementById('theme-toggle-btn');
+
+  function syncButtonState() {
+    themeBtn?.setAttribute('aria-pressed', String(document.documentElement.classList.contains('sensory-theme')));
+  }
+
+  syncButtonState();
+
+  themeBtn?.addEventListener('click', () => {
+    const enabled = !document.documentElement.classList.contains('sensory-theme');
+    document.documentElement.classList.toggle('sensory-theme', enabled);
+    localStorage.setItem('nw-sensory-theme', String(enabled));
+    syncButtonState();
+  });
+</script>

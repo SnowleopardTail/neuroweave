@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+
+// 历史问卷会不断累积，最新的排最前面
+const surveys = [
+  {
+    title: 'NW神经丝织者2026半年度读者反馈问卷',
+    link: 'https://tally.so/r/Y5qVQJ',
+    status: '已结束',
+  },
+];
+---
+
+<BaseLayout title="Neuroweave 神经丝织者 - 反馈">
+  <Header subtitle="告诉我们你的想法或建议。">
+    <h1 slot="title">反馈</h1>
+  </Header>
+
+  <main class="feedback-container">
+    <section class="feedback-card">
+      <h2>我们想听到你的声音</h2>
+      <p>
+        无论是文章内容的勘误、翻译建议，还是无障碍体验的想法，
+        都欢迎通过下面的方式联系我们。
+      </p>
+    </section>
+
+    <section class="feedback-card">
+      <h2>信息需求问卷</h2>
+      <p>
+        我们大约每半年会发起一次读者信息需求问卷，并会在此更新可公开分享的问卷结果，
+        这部分内容会持续累积。
+      </p>
+      <div class="survey-list">
+        {surveys.map((survey) => (
+          <a class="survey-item" href={survey.link} target="_blank" rel="noopener noreferrer">
+            <span class="survey-status">{survey.status}</span>
+            <span class="survey-title">{survey.title}</span>
+            <span class="survey-arrow">→</span>
+          </a>
+        ))}
+      </div>
+      <p class="hint">历史问卷结果会在此陆续更新，暂时还没有可公开分享的内容。</p>
+    </section>
+
+    <section class="feedback-card">
+      <h2>写邮件给我们</h2>
+      <p>点击下方按钮，会打开你的邮件客户端并自动填好收件地址。</p>
+      <a class="mailto-btn" href="mailto:Neuroweave_translation_team@proton.me?subject=网站反馈">
+        ✉️ 发送反馈邮件
+      </a>
+    </section>
+
+    <section class="feedback-card">
+      <h2>其他联系方式</h2>
+      <div class="social-links">
+        <a href="https://www.xiaohongshu.com/user/profile/64ad11b5000000001c02bd17" target="_blank" rel="noopener noreferrer">小红书</a>
+        <a href="https://weibo.com/u/6090388163" target="_blank" rel="noopener noreferrer">微博</a>
+        <a href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL" target="_blank" rel="noopener noreferrer">微信公众号</a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .feedback-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .feedback-card {
+    background-color: var(--bg-card);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .feedback-card h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  .feedback-card p {
+    margin: 0 0 12px 0;
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  .feedback-card .hint {
+    margin: 12px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .survey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .survey-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .survey-item:hover {
+    border-color: var(--text-primary);
+  }
+
+  .survey-status {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: var(--card-header-bg, #F0E2B4);
+    color: var(--text-primary);
+  }
+
+  .survey-title {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  .survey-arrow {
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .mailto-btn {
+    display: inline-block;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .mailto-btn:hover {
+    opacity: 0.85;
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .social-links a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .social-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .feedback-card {
+      padding: 24px 20px;
+    }
+  }
+</style>

@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+
+const keywordModules = import.meta.glob('/src/content/keywords/*.md', { eager: true });
+
+type KeywordEntry = {
+  term: string;
+  term_zh: string;
+  category: string;
+  Content: any;
+};
+
+const categoryOrder = ['核心概念', '范式与运动', '体验与反应', '神经发育与诊断类别', '学习差异', '支持与语言实践'];
+
+const entries: KeywordEntry[] = Object.entries(keywordModules)
+  .filter(([path]) => !path.includes('TEMPLATE'))
+  .map(([, module]: [string, any]) => ({
+    term: module.frontmatter?.term || '',
+    term_zh: module.frontmatter?.term_zh || '',
+    category: module.frontmatter?.category || '其他',
+    Content: module.default,
+  }))
+  .sort((a, b) => a.term.localeCompare(b.term));
+
+const groups = categoryOrder
+  .map((category) => ({
+    category,
+    items: entries.filter((entry) => entry.category === category),
+  }))
+  .filter((group) => group.items.length > 0);
+---
+
+<BaseLayout title="Neuroweave 神经丝织者 - 关键词整理">
+  <Header subtitle="我们在翻译工作中使用的术语与工作定义（阶段性整理，非最终界定）。">
+    <h1 slot="title">关键词整理</h1>
+  </Header>
+
+  <main class="keywords-container">
+    <section class="keywords-intro">
+      <p>
+        以下术语说明用于说明我们当前翻译工作中的用词选择与理解方式，作为阶段性的临时定义（working definition）。
+        这些表述并不意在给出唯一或最终的界定，而是用于提高译文内部的一致性，并让读者理解我们在具体语境中如何使用这些词。
+      </p>
+      <p>
+        本术语整理旨在说明本项目译文中的用词与工作定义，以提高一致性与可追溯性；其作用在于提供参照，
+        而不意在穷尽所有语义争议或替读者作出理解结论。
+      </p>
+    </section>
+
+    {groups.map((group) => (
+      <section class="keyword-group">
+        <h2>{group.category}</h2>
+        <div class="keyword-grid">
+          {group.items.map((entry) => (
+            <article class="keyword-card">
+              <h3>
+                <span class="term-en">{entry.term}</span>
+                <span class="term-zh">{entry.term_zh}</span>
+              </h3>
+              <div class="keyword-definition">
+                <entry.Content />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  .keywords-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .keywords-intro {
+    background-color: var(--bg-card);
+    padding: 24px 32px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    margin-bottom: 32px;
+  }
+
+  .keywords-intro p {
+    margin: 0 0 12px 0;
+    line-height: 1.8;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .keywords-intro p:last-child {
+    margin-bottom: 0;
+  }
+
+  .keyword-group {
+    margin-bottom: 36px;
+  }
+
+  .keyword-group h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--accent-border);
+  }
+
+  .keyword-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .keyword-card {
+    background-color: var(--bg-card);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .keyword-card h3 {
+    margin: 0 0 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .term-en {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+
+  .term-zh {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .keyword-definition {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  :global(.keyword-definition p) {
+    margin: 0 0 10px 0;
+  }
+
+  :global(.keyword-definition p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.keyword-definition ul) {
+    margin: 0 0 10px 0;
+    padding-left: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .keywords-intro {
+      padding: 20px;
+    }
+
+    .keyword-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

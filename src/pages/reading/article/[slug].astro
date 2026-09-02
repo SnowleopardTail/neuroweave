@@ -1,0 +1,533 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+
+// 生成所有可能的静态路径
+export function getStaticPaths() {
+  const allArticles = Object.entries({
+    ...import.meta.glob('/src/content/articles/*.md', { eager: true }),
+    ...import.meta.glob('/src/content/articles/**/*.md', { eager: true }),
+  })
+    .map(([path, module]: [string, any]) => {
+      const filename = path.split('/').pop()?.replace('.md', '') || '';
+      
+      return {
+        slug: filename,
+        ...module.frontmatter,
+        Content: module.default,
+      };
+    })
+    .filter((a: any) => !a.slug.includes('TEMPLATE'));
+
+  return allArticles.map((article: any) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+interface Props {
+  article: any;
+}
+
+const { article } = Astro.props;
+
+const typeLabels: Record<string, string> = {
+  translations: 'NW 翻译',
+  overviews: 'NW 概述',
+  conversations: 'NW 访谈',
+};
+const typeLabel = typeLabels[article.type] || 'NW 内容';
+const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
+---
+
+<BaseLayout title={`${article.title} - Neuroweave 神经丝织者`}>
+  <Header subtitle={article.excerpt}>
+    <h1 slot="title">{article.title}</h1>
+  </Header>
+
+  <main class="article-container" id="article-container">
+    <a href={`/reading/${article.type}`} class="back-link-top">← 返回{typeLabel}</a>
+
+    <div class="a11y-toolbar" id="a11y-toolbar">
+      <div class="a11y-group">
+        <span class="a11y-label">字号</span>
+        <button type="button" data-font-decrease aria-label="减小字号">A-</button>
+        <button type="button" data-font-reset aria-label="重置字号">A</button>
+        <button type="button" data-font-increase aria-label="增大字号">A+</button>
+      </div>
+      <button type="button" class="a11y-toggle" data-toggle-ruler aria-pressed="false">阅读尺</button>
+      <div class="ruler-colors" id="ruler-colors">
+        <button type="button" class="ruler-swatch" data-ruler-color="rgba(240, 226, 180, 0.35)" style="--swatch-color: rgba(240, 200, 100, 0.9);" aria-label="暖黄色阅读尺"></button>
+        <button type="button" class="ruler-swatch" data-ruler-color="rgba(147, 197, 253, 0.35)" style="--swatch-color: rgba(96, 165, 250, 0.9);" aria-label="柔和蓝色阅读尺"></button>
+        <button type="button" class="ruler-swatch" data-ruler-color="rgba(167, 217, 180, 0.35)" style="--swatch-color: rgba(110, 190, 130, 0.9);" aria-label="柔和绿色阅读尺"></button>
+        <button type="button" class="ruler-swatch" data-ruler-color="rgba(216, 180, 213, 0.35)" style="--swatch-color: rgba(190, 130, 185, 0.9);" aria-label="柔和紫色阅读尺"></button>
+        <button type="button" class="ruler-swatch" data-ruler-color="rgba(255, 178, 178, 0.35)" style="--swatch-color: rgba(230, 130, 130, 0.9);" aria-label="柔和粉色阅读尺"></button>
+      </div>
+    </div>
+
+    <article class="article-content">
+      <span class="type-badge">{contentLabel}</span>
+
+      <div class="article-meta">
+        <span class="meta-item">日期：{article.date}</span>
+        {article.originalAuthor && (
+          <span class="meta-item">原作者：{article.originalAuthor}</span>
+        )}
+        {article.author && (
+          <span class="meta-item">
+            {article.type === 'translations' ? '翻译' : '整理'}：{article.author}
+          </span>
+        )}
+      </div>
+
+      {article.tags && article.tags.length > 0 && (
+        <div class="article-tags">
+          {article.tags.map((tag: string) => (
+            <a href={`/tags/${tag}`} class="tag-link">#{tag}</a>
+          ))}
+        </div>
+      )}
+
+      <hr class="divider" />
+
+      <div class="markdown-content">
+        <article.Content />
+      </div>
+
+      <div class="article-footer">
+        {article.originalSlug && (
+          <a href={`/reading/article/${article.originalSlug}`} class="back-link original-link">阅读完整版</a>
+        )}
+        <a href={`/reading/${article.type}`} class="back-link">← 返回{typeLabel}</a>
+      </div>
+    </article>
+  </main>
+
+  <div class="reading-ruler" id="reading-ruler" hidden></div>
+</BaseLayout>
+
+<style>
+  .article-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .back-link-top {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .back-link-top:hover {
+    color: var(--text-primary);
+    transform: translateX(-4px);
+  }
+
+  .a11y-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--accent-border);
+    border-radius: 10px;
+  }
+
+  .a11y-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .a11y-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .a11y-toolbar button {
+    border: 1px solid var(--accent-border);
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .a11y-toolbar button:hover {
+    border-color: var(--text-primary);
+  }
+
+  .a11y-toolbar button[aria-pressed="true"] {
+    background-color: var(--text-primary);
+    color: var(--bg-card);
+    border-color: var(--text-primary);
+  }
+
+  .ruler-colors {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ruler-swatch,
+  .a11y-toolbar button.ruler-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background-color: var(--swatch-color);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ruler-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .ruler-swatch[aria-pressed="true"],
+  .a11y-toolbar button.ruler-swatch[aria-pressed="true"] {
+    background-color: var(--swatch-color);
+    border-color: var(--text-primary);
+  }
+
+  .reading-ruler {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 36px;
+    background-color: rgba(240, 226, 180, 0.35);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+    z-index: 500;
+  }
+
+  .reading-ruler[hidden] {
+    display: none;
+  }
+
+  .article-content {
+    background-color: var(--bg-card);
+    padding: 48px 40px;
+    border-radius: 16px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .type-badge {
+    display: inline-block;
+    background-color: var(--badge-bg, #F0E2B4);
+    color: var(--text-primary);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .meta-item {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .tag-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+  }
+
+  .tag-link:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--accent-border);
+    margin: 24px 0 32px;
+  }
+
+  .markdown-content {
+    line-height: 1.9;
+    margin: 0;
+    font-size: calc(1.05rem * var(--content-scale, 1));
+  }
+
+  /* Markdown 内容样式 */
+  :global(.markdown-content h1) {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  :global(.markdown-content h2) {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-top: 36px;
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  :global(.markdown-content h3) {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 28px;
+    margin-bottom: 12px;
+  }
+
+  :global(.markdown-content p) {
+    margin: 20px 0;
+    color: var(--text-primary);
+  }
+
+  :global(.markdown-content ul),
+  :global(.markdown-content ol) {
+    margin: 16px 0;
+    padding-left: 32px;
+  }
+
+  :global(.markdown-content li) {
+    margin: 8px 0;
+    color: var(--text-primary);
+  }
+
+  :global(.markdown-content blockquote) {
+    border-left: 4px solid var(--accent-border);
+    padding-left: 16px;
+    margin: 20px 0;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  :global(.markdown-content code) {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  :global(.markdown-content pre) {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  :global(.markdown-content pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  :global(.markdown-content a) {
+    color: var(--text-primary);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  :global(.markdown-content a:hover) {
+    color: rgba(44, 44, 44, 0.7);
+  }
+
+  :global(.markdown-content strong) {
+    font-weight: 700;
+  }
+
+  :global(.references-box) {
+    margin-top: 40px;
+    padding: 16px 20px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--accent-border);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  :global(.references-box .references-title) {
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  :global(.references-box ul) {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  :global(.references-box li) {
+    margin: 4px 0;
+    color: var(--text-muted);
+  }
+
+  :global(.references-box a) {
+    color: var(--text-muted);
+    text-decoration: underline;
+  }
+
+  .article-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--accent-border);
+  }
+
+  .back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: inline-block;
+  }
+
+  .back-link:hover {
+    color: var(--text-primary);
+    transform: translateX(-4px);
+  }
+
+  .original-link {
+    margin-right: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .article-content {
+      padding: 24px 20px;
+    }
+
+    :global(.markdown-content h1) {
+      font-size: 1.5rem;
+    }
+
+    :global(.markdown-content h2) {
+      font-size: 1.3rem;
+    }
+  }
+
+  /* 护眼模式细节调整（全局变量已在 BaseLayout 中定义，作用于全站） */
+  :global(:root.sensory-theme .a11y-toolbar button) {
+    background-color: #232B38;
+  }
+
+  :global(:root.sensory-theme .references-box) {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  :global(:root.sensory-theme .markdown-content code),
+  :global(:root.sensory-theme .markdown-content pre) {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+</style>
+
+<script>
+  const container = document.getElementById('article-container') as HTMLElement | null;
+  const ruler = document.getElementById('reading-ruler') as HTMLElement | null;
+  const fontDecreaseBtn = document.querySelector('[data-font-decrease]') as HTMLButtonElement | null;
+  const fontResetBtn = document.querySelector('[data-font-reset]') as HTMLButtonElement | null;
+  const fontIncreaseBtn = document.querySelector('[data-font-increase]') as HTMLButtonElement | null;
+  const rulerToggleBtn = document.querySelector('[data-toggle-ruler]') as HTMLButtonElement | null;
+  const rulerSwatches = document.querySelectorAll('.ruler-swatch') as NodeListOf<HTMLButtonElement>;
+
+  const fontScales = [0.85, 1, 1.15, 1.3, 1.5];
+  let scaleIndex = 1;
+
+  function applyFontScale() {
+    if (!container) return;
+    container.style.setProperty('--content-scale', String(fontScales[scaleIndex]));
+    localStorage.setItem('nw-font-scale-index', String(scaleIndex));
+  }
+
+  const savedScaleIndex = localStorage.getItem('nw-font-scale-index');
+  if (savedScaleIndex !== null) {
+    scaleIndex = Math.min(Math.max(parseInt(savedScaleIndex, 10) || 1, 0), fontScales.length - 1);
+  }
+  applyFontScale();
+
+  fontDecreaseBtn?.addEventListener('click', () => {
+    scaleIndex = Math.max(0, scaleIndex - 1);
+    applyFontScale();
+  });
+
+  fontResetBtn?.addEventListener('click', () => {
+    scaleIndex = 1;
+    applyFontScale();
+  });
+
+  fontIncreaseBtn?.addEventListener('click', () => {
+    scaleIndex = Math.min(fontScales.length - 1, scaleIndex + 1);
+    applyFontScale();
+  });
+
+  // 阅读尺：跟随鼠标高亮当前阅读行
+  function handleRulerMove(e: MouseEvent) {
+    if (!ruler) return;
+    ruler.style.top = `${e.clientY - 18}px`;
+  }
+
+  function setRulerEnabled(enabled: boolean) {
+    if (!ruler || !rulerToggleBtn) return;
+    ruler.hidden = !enabled;
+    rulerToggleBtn.setAttribute('aria-pressed', String(enabled));
+    if (enabled) {
+      document.addEventListener('mousemove', handleRulerMove);
+    } else {
+      document.removeEventListener('mousemove', handleRulerMove);
+    }
+    localStorage.setItem('nw-ruler-enabled', String(enabled));
+  }
+
+  rulerToggleBtn?.addEventListener('click', () => {
+    const isHidden = ruler ? ruler.hidden === true : true;
+    setRulerEnabled(isHidden);
+  });
+
+  setRulerEnabled(localStorage.getItem('nw-ruler-enabled') === 'true');
+
+  // 阅读尺颜色选项
+  function setRulerColor(color: string) {
+    if (!ruler) return;
+    ruler.style.backgroundColor = color;
+    rulerSwatches.forEach((swatch) => {
+      swatch.setAttribute('aria-pressed', String(swatch.dataset.rulerColor === color));
+    });
+    localStorage.setItem('nw-ruler-color', color);
+  }
+
+  rulerSwatches.forEach((swatch) => {
+    swatch.addEventListener('click', () => {
+      const color = swatch.dataset.rulerColor;
+      if (color) setRulerColor(color);
+    });
+  });
+
+  const savedRulerColor = localStorage.getItem('nw-ruler-color') || rulerSwatches[0]?.dataset.rulerColor;
+  if (savedRulerColor) setRulerColor(savedRulerColor);
+</script>

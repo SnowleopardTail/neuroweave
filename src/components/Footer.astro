@@ -1,0 +1,67 @@
+---
+/* 页脚：所有页面完全一致 */
+---
+<footer class="page-width">
+  <p>© 2026 Neuroweave 神经丝织者</p>
+
+  <div class="social">
+    <p>也可以在其他平台找到我们</p>
+    <div class="social-links">
+      <a href="https://www.xiaohongshu.com/user/profile/64ad11b5000000001c02bd17" target="_blank" rel="noopener noreferrer">小红书</a>
+      <a href="https://weibo.com/u/6090388163" target="_blank" rel="noopener noreferrer">微博</a>
+      <a href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL" target="_blank" rel="noopener noreferrer">微信公众号</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 60px;
+    padding-top: 28px;
+    padding-bottom: 36px;
+    border-top: 1px solid var(--accent-border);
+    font-size: 0.9rem;
+  }
+  footer p {
+    margin: 4px 0;
+  }
+  .social {
+    text-align: right;
+  }
+  .social > p {
+    margin: 4px 0 8px 0;
+  }
+  .social-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+  }
+  .social-links a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .social-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    footer {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+    .social {
+      text-align: center;
+    }
+    .social-links {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+</style>

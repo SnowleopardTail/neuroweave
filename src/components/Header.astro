@@ -1,0 +1,91 @@
+---
+// 定义外部可以传入的属性（如不同页面的副标题）
+interface Props {
+  subtitle?: string;
+}
+
+const { subtitle } = Astro.props;
+---
+
+<header class="page-width">
+  <!-- 左侧：保持原样，包在一起 -->
+  <div class="header-left">
+    <img src="/neuroweavelogo.png" alt="Neuroweave 神经丝织者" />
+
+    <div class="site-title">
+      <!-- 如果外部传了内容就用传进来的，否则可以放默认插槽 -->
+      <slot name="title">
+        <h1>Neuroweave 神经丝织者</h1>
+      </slot>
+
+      {subtitle && <p>{subtitle}</p>}
+    </div>
+  </div>
+
+  <!-- 右侧：可选插槽，外部传入了内容才会显示，没传就自动为空 -->
+  <div class="header-right">
+    <slot name="right" />
+  </div>
+</header>
+
+<style>
+  header {
+    margin-top: 36px;
+    margin-bottom: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 只有右侧有内容时才两头推开 */
+    gap: 24px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  header img {
+    width: 72px;
+    height: auto;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .site-title :global(h1) {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  .site-title p {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+  }
+
+  .header-right {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      margin-top: 24px;
+      margin-bottom: 32px;
+    }
+
+    .header-left {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-right {
+      width: 100%;
+    }
+  }
+</style>

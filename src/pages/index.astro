@@ -1,17 +1,48 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Card from '../components/Card.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Neuroweave 神经丝织者 - 首页">
+  <!-- 自定义当前页面的 Header 内容 -->
+  <Header subtitle="Reject Neuronormativity, Embrace Diversity. 拒绝神经规范，接纳多元。">
+    <h1 slot="title">Neuroweave 神经丝织者</h1>
+  </Header>
+
+  <!-- 网站主要内容 -->
+  <main>
+    <!-- 关于我们 -->
+    <Card title="关于我们" href="/about" linkText="了解更多关于我们 →">
+      神经丝织者 NW 是关注神经多样性的中文知识共享社群。
+      我们通过翻译、写作、访谈与交流，连接不同背景的人，
+      分享资料与经验，探索神经多样性，并鼓励每个人选择适合自己的语言和叙事。
+    </Card>
+
+    <!-- NW 翻译 -->
+    <Card title="NW 翻译" href="/reading/translations" linkText="进入文章列表 →">
+      这里可以阅读我们曾经翻译过的神经发散/神经多样性相关文章。
+    </Card>
+
+    <!-- NW 概述 -->
+    <Card title="NW 概述" href="/reading/overviews" linkText="进入概述列表 →">
+      这里是我们小组成员对于某个神经多样性主题的整理与概述。
+    </Card>
+
+    <!-- NW 访谈 -->
+    <Card title="NW 访谈" href="/reading/conversations" linkText="进入访谈列表 →">
+      这里可以阅读我们与其他自倡导群体、公益团体及实践者的对话过程。
+    </Card>
+
+    <!-- 关键词整理 -->
+    <Card title="关键词整理" href="/keywords" linkText="查看关键词整理 →">
+      我们在翻译过程中碰到的一些术语的用词选择与理解方式，作为阶段性的工作定义整理。
+    </Card>
+
+    <!-- 反馈 -->
+    <Card title="反馈" href="/feedback" linkText="查看反馈 →">
+      这里记录并更新来自读者的反馈，
+      包括最新的信息需求问卷。
+    </Card>
+  </main>
+</BaseLayout>

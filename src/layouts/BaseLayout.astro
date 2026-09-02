@@ -1,0 +1,98 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = "Neuroweave" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+
+    <!-- 思源宋体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- 尽早应用护眼模式，避免切换主题时的闪烁 -->
+    <script is:inline>
+      (function () {
+        try {
+          if (localStorage.getItem('nw-sensory-theme') === 'true') {
+            document.documentElement.classList.add('sensory-theme');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+
+  <body>
+    <!-- 1. 全局导航 -->
+    <Nav />
+
+    <!-- 2. 页面主体插槽（具体的 Header 和 Main 会插在这里） -->
+    <slot />
+
+    <!-- 3. 全局页脚 -->
+    <Footer />
+  </body>
+</html>
+
+<!-- is:global 确保全局字体、变量和基础样式对整个网站生效 -->
+<style is:global>
+  :root {
+    --bg-main: #FAF8F5;
+    --bg-nav: #F3EBCB;
+    --bg-card: #FFF6D9;
+    --text-primary: #2C2C2C;
+    --text-muted: #666666;
+    --accent-border: rgba(0, 0, 0, 0.05);
+    --card-header-bg: #F0E2B4;
+    --font-serif: "Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", STSong, "华文宋体", "SimSun", "新宋体", Georgia, serif;
+  }
+
+  /* 护眼模式：低对比度、感官友好的暗色配色，作用于全站 */
+  :root.sensory-theme {
+    --bg-main: #161B24;
+    --bg-nav: #1E2430;
+    --bg-card: #1E2430;
+    --text-primary: #93A8C7;
+    --text-muted: #6E7F98;
+    --accent-border: rgba(255, 255, 255, 0.08);
+    --badge-bg: #2A3B4D;
+    --card-header-bg: #171B24;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-serif);
+    color: var(--text-primary);
+    background-color: var(--bg-main);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .page-width {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+</style>

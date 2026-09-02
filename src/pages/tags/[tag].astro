@@ -1,0 +1,372 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+
+// 获取所有 markdown 文件
+const allModules = import.meta.glob('/src/content/articles/*.md', { eager: true });
+
+type Article = {
+  filename: string;
+  slug: string;
+  title: string;
+  date: string;
+  author?: string;
+  tags: string[];
+  excerpt?: string;
+  type: string;
+};
+
+const allArticles: Article[] = Object.entries(allModules)
+  .reduce<Article[]>((acc, [path, module]: [string, any]) => {
+    const filename = path.split('/').pop()?.replace('.md', '') || '';
+    const frontmatter = module.frontmatter || {};
+
+    if (!frontmatter.type || filename.includes('TEMPLATE')) {
+      return acc;
+    }
+
+    acc.push({
+      filename,
+      slug: filename,
+      title: String(frontmatter.title || ''),
+      date: String(frontmatter.date || ''),
+      author: frontmatter.author ? String(frontmatter.author) : undefined,
+      tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.map(String) : [],
+      excerpt: frontmatter.excerpt ? String(frontmatter.excerpt) : undefined,
+      type: String(frontmatter.type),
+    });
+
+    return acc;
+  }, []);
+
+export function getStaticPaths() {
+  const routeArticles: Article[] = Object.entries(import.meta.glob('/src/content/articles/*.md', { eager: true }))
+    .reduce<Article[]>((acc, [path, module]: [string, any]) => {
+      const filename = path.split('/').pop()?.replace('.md', '') || '';
+      const frontmatter = module.frontmatter || {};
+
+      if (!frontmatter.type || filename.includes('TEMPLATE')) {
+        return acc;
+      }
+
+      acc.push({
+        filename,
+        slug: filename,
+        title: String(frontmatter.title || ''),
+        date: String(frontmatter.date || ''),
+        author: frontmatter.author ? String(frontmatter.author) : undefined,
+        tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.map(String) : [],
+        excerpt: frontmatter.excerpt ? String(frontmatter.excerpt) : undefined,
+        type: String(frontmatter.type),
+      });
+
+      return acc;
+    }, []);
+
+  const allTags = Array.from(
+    new Set(routeArticles.flatMap((a: any) => a.tags || []))
+  );
+
+  return allTags.map((tag: string) => ({
+    params: { tag },
+  }));
+}
+
+const { tag } = Astro.params;
+const allTags = Array.from(
+  new Set(allArticles.flatMap((a: any) => a.tags || []))
+);
+
+const articles = allArticles
+  .filter((a: any) => (a.tags || []).includes(tag))
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const otherTags = allTags.filter((t: string) => t !== tag);
+---
+
+<BaseLayout title={`标签: ${tag} - Neuroweave 神经丝织者`}>
+  <Header subtitle={`查看所有标记为 "${tag}" 的文章和内容。`}>
+    <h1 slot="title">标签：{tag}</h1>
+  </Header>
+
+  <main class="tag-page-container">
+    <div class="tag-content">
+      <div class="articles-count">
+        <p>找到 <strong>{articles.length}</strong> 篇相关内容</p>
+      </div>
+
+      {articles.length > 0 ? (
+        <div class="articles-list">
+          {articles.map(article => (
+            <article class="article-card">
+              <h3>{article.title}</h3>
+              <p class="meta">{article.date}</p>
+              <p class="excerpt">{article.excerpt}</p>
+              <div class="tags-inline">
+                {(article.tags || []).map((t: string) => (
+                  <a href={`/tags/${t}`} class={`tag-badge ${t === tag ? 'active' : ''}`}>
+                    {t}
+                  </a>
+                ))}
+              </div>
+              <a href={`/reading/article/${article.slug}`} class="read-more">阅读全文 →</a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="no-articles">暂无该标签的文章</p>
+      )}
+    </div>
+
+    <aside class="sidebar">
+      <div class="related-tags">
+        <h3>其他标签</h3>
+        <div class="tag-cloud">
+          {otherTags.map(t => {
+            const count = allArticles.filter((a: any) => (a.tags || []).includes(t)).length;
+            return (
+              <a href={`/tags/${t}`} class="tag-cloud-item" title={`${count} 篇文章`}>
+                {t}
+                <span class="count">({count})</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="back-nav">
+        <h3>返回</h3>
+        <ul>
+          <li><a href="/reading/translations">NW 翻译</a></li>
+          <li><a href="/reading/overviews">NW 概述</a></li>
+          <li><a href="/reading/conversations">NW 访谈</a></li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+</BaseLayout>
+
+<style>
+  .tag-page-container {
+    display: flex;
+    gap: 32px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .tag-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .articles-count {
+    background-color: var(--bg-card);
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--text-primary);
+    margin-bottom: 24px;
+  }
+
+  .articles-count p {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .articles-count strong {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .no-articles {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 60px 20px;
+  }
+
+  .article-card {
+    background-color: var(--bg-card);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .article-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .meta {
+    margin: 0 0 12px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .excerpt {
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+
+  .tags-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .tag-badge {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .tag-badge:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .tag-badge.active {
+    background-color: var(--text-primary);
+    color: var(--bg-card);
+    font-weight: 600;
+  }
+
+  .read-more {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: inline-block;
+  }
+
+  .read-more:hover {
+    transform: translateX(4px);
+    text-decoration: underline;
+  }
+
+  /* 侧边栏 */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .related-tags {
+    background-color: var(--bg-card);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    position: sticky;
+    top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .related-tags h3 {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tag-cloud-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: #FFFFFF;
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .tag-cloud-item:hover {
+    border-color: var(--text-primary);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .tag-cloud-item .count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .back-nav {
+    background-color: var(--bg-card);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    position: sticky;
+    top: 320px;
+  }
+
+  .back-nav h3 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .back-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .back-nav li {
+    margin: 8px 0;
+  }
+
+  .back-nav a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+    display: inline-block;
+  }
+
+  .back-nav a:hover {
+    transform: translateX(4px);
+    text-decoration: underline;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .tag-page-container {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      width: 100%;
+    }
+
+    .related-tags,
+    .back-nav {
+      position: static;
+    }
+  }
+</style>
