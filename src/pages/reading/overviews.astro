@@ -3,8 +3,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Search from '../../components/Search.astro';
 
-// 使用 glob 导入获取所有 markdown 文件
-const allModules = import.meta.glob('/src/content/articles/*.md', { eager: true });
+// 导入文章根目录和所有子目录；符合 type 的文章会自动显示。
+const allModules = {
+  ...import.meta.glob('/src/content/articles/*.md', { eager: true }),
+  ...import.meta.glob('/src/content/articles/**/*.md', { eager: true }),
+};
 
 // 处理和过滤文章
 const articles = Object.entries(allModules)
@@ -12,8 +15,8 @@ const articles = Object.entries(allModules)
     const filename = path.split('/').pop()?.replace('.md', '') || '';
     const frontmatter = module.frontmatter || {};
     
-    // 只包含 overviews 类型且不是模板的文章
-    if (frontmatter.type !== 'overviews' || filename.includes('TEMPLATE')) {
+    // 只显示完整版概述；易读版仅通过原文链接进入，并过滤掉模板文件
+    if (frontmatter.type !== 'overviews' || frontmatter.isEasyRead || filename.includes('TEMPLATE')) {
       return null;
     }
     
@@ -27,6 +30,8 @@ const articles = Object.entries(allModules)
       excerpt: frontmatter.excerpt,
       type: frontmatter.type,
       easyReadSlug: frontmatter.easyReadSlug,
+      isEasyRead: frontmatter.isEasyRead,
+      originalSlug: frontmatter.originalSlug,
     };
   })
   .filter((a: any) => a !== null)
@@ -73,8 +78,43 @@ const allTags = Array.from(
                     </div>
                   )}
                   <div class="read-links">
-                    <a href={`/reading/article/${article.slug}`} class="read-more">阅读完整版 →</a>
-                    <a href={`/reading/article/${article.easyReadSlug || article.slug}`} class="read-more read-more-secondary">阅读易读版 →</a>
+                    {article.isEasyRead ? (
+                      <>
+                        <a
+                          href={`/reading/article/${article.slug}`}
+                          class="read-more read-more-secondary"
+                        >
+                          阅读易读版 →
+                        </a>
+
+                        {article.originalSlug && (
+                          <a
+                            href={`/reading/article/${article.originalSlug}`}
+                            class="read-more"
+                          >
+                            阅读完整版 →
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <a
+                          href={`/reading/article/${article.slug}`}
+                          class="read-more"
+                        >
+                          阅读完整版 →
+                        </a>
+
+                        {article.easyReadSlug && (
+                          <a
+                            href={`/reading/article/${article.easyReadSlug}`}
+                            class="read-more read-more-secondary"
+                          >
+                            阅读易读版 →
+                          </a>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </article>

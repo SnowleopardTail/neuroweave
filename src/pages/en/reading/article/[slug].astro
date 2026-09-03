@@ -110,6 +110,36 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
           aria-label="Soft pink reading ruler"
         ></button>
       </div>
+      <div class="ruler-sizes" id="ruler-sizes">
+  <span class="a11y-label">Ruler size</span>
+
+  <button
+    type="button"
+    class="ruler-size"
+    data-ruler-size="24"
+    aria-label="Thin reading ruler"
+  >
+    Thin
+  </button>
+
+  <button
+    type="button"
+    class="ruler-size"
+    data-ruler-size="36"
+    aria-label="Medium reading ruler"
+  >
+    Medium
+  </button>
+
+  <button
+    type="button"
+    class="ruler-size"
+    data-ruler-size="56"
+    aria-label="Thick reading ruler"
+  >
+    Thick
+  </button>
+</div>
     </div>
 
     <article class="article-content">
@@ -551,9 +581,11 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
 
   // Reading ruler
   function handleRulerMove(e: MouseEvent) {
-    if (!ruler) return;
-    ruler.style.top = `${e.clientY - 18}px`;
-  }
+  if (!ruler) return;
+
+  const rulerHeight = ruler.offsetHeight;
+  ruler.style.top = `${e.clientY - rulerHeight / 2}px`;
+}
 
   function setRulerEnabled(enabled: boolean) {
     if (!ruler || !rulerToggleBtn) return;

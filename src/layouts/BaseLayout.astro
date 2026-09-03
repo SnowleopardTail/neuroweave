@@ -24,14 +24,6 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
     <link rel="shortcut icon" href="/neuroweavelogo.png" />
     <link rel="apple-touch-icon" href="/neuroweavelogo.png" />
 
-    <!-- 思源宋体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    >
-
     <!-- 尽早应用护眼模式，避免切换主题时的闪烁 -->
     <script is:inline>
       (function () {
@@ -58,18 +50,18 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
 
 <!-- is:global 确保全局字体、变量和基础样式对整个网站生效 -->
 <style is:global>
-  :root {
-    --bg-main: #FAF8F5;
-    --bg-nav: #F3EBCB;
-    --bg-card: #FFF6D9;
-    --text-primary: #2C2C2C;
-    --text-muted: #666666;
-    --accent-border: rgba(0, 0, 0, 0.05);
-    --card-header-bg: #F0E2B4;
-    --font-serif: "Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", STSong, "华文宋体", "SimSun", "新宋体", Georgia, serif;
-  }
+:root {
+  --bg-main: #EFECE6;        /* 沉稳燕麦暖灰，去除刺眼白光 */
+  --bg-nav: #E3DFD7;         /* 质感偏重的灰质导航栏 */
+  --bg-card: #E8E4DC;        /* 低饱和软纸卡片色 */
+  --text-primary: #383531;    /* 暗炭棕黑，比纯黑轻盈柔和很多 */
+  --text-muted: #736E67;      /* 温和岩灰 */
+  --accent-border: rgba(56, 53, 49, 0.08);
+  --card-header-bg: #D8D3C8;  /* 深哑光燕麦 Header */
+  --font-serif: "Hiragino Sans GB", "冬青黑体", "Microsoft YaHei", "微软雅黑", sans-serif;
+}
 
-  /* 护眼模式：低对比度、感官友好的暗色配色，作用于全站 */
+  /* 暗色系模式：低对比度、感官友好的暗色配色，作用于全站 */
   :root.sensory-theme {
     --bg-main: #161B24;
     --bg-nav: #1E2430;

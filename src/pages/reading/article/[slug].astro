@@ -55,13 +55,23 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
         <button type="button" data-font-reset aria-label="重置字号">A</button>
         <button type="button" data-font-increase aria-label="增大字号">A+</button>
       </div>
+      
       <button type="button" class="a11y-toggle" data-toggle-ruler aria-pressed="false">阅读尺</button>
+
+      <!-- 颜色选择 -->
       <div class="ruler-colors" id="ruler-colors">
         <button type="button" class="ruler-swatch" data-ruler-color="rgba(240, 226, 180, 0.35)" style="--swatch-color: rgba(240, 200, 100, 0.9);" aria-label="暖黄色阅读尺"></button>
         <button type="button" class="ruler-swatch" data-ruler-color="rgba(147, 197, 253, 0.35)" style="--swatch-color: rgba(96, 165, 250, 0.9);" aria-label="柔和蓝色阅读尺"></button>
         <button type="button" class="ruler-swatch" data-ruler-color="rgba(167, 217, 180, 0.35)" style="--swatch-color: rgba(110, 190, 130, 0.9);" aria-label="柔和绿色阅读尺"></button>
         <button type="button" class="ruler-swatch" data-ruler-color="rgba(216, 180, 213, 0.35)" style="--swatch-color: rgba(190, 130, 185, 0.9);" aria-label="柔和紫色阅读尺"></button>
         <button type="button" class="ruler-swatch" data-ruler-color="rgba(255, 178, 178, 0.35)" style="--swatch-color: rgba(230, 130, 130, 0.9);" aria-label="柔和粉色阅读尺"></button>
+      </div>
+
+      <!-- 适中微调后的尺寸选择 -->
+      <div class="ruler-sizes" id="ruler-sizes">
+        <button type="button" class="ruler-size" data-ruler-size="32" aria-label="单行阅读尺">单行 (32px)</button>
+        <button type="button" class="ruler-size" data-ruler-size="60" aria-label="双行阅读尺">双行 (60px)</button>
+        <button type="button" class="ruler-size" data-ruler-size="96" aria-label="多行阅读尺">多行 (96px)</button>
       </div>
     </div>
 
@@ -95,28 +105,28 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
       </div>
 
       <div class="article-footer">
-  {article.originalSlug && (
-    <a
-      href={`/reading/article/${article.originalSlug}`}
-      class="back-link original-link"
-    >
-      阅读完整版
-    </a>
-  )}
+        {article.originalSlug && (
+          <a
+            href={`/reading/article/${article.originalSlug}`}
+            class="back-link original-link"
+          >
+            阅读完整版
+          </a>
+        )}
 
-  {article.englishSlug && (
-    <a
-      href={`/en/reading/article/${article.englishSlug}`}
-      class="back-link original-link"
-    >
-      阅读英文原文 →
-    </a>
-  )}
+        {article.englishSlug && (
+          <a
+            href={`/en/reading/article/${article.englishSlug}`}
+            class="back-link original-link"
+          >
+            阅读英文原文 →
+          </a>
+        )}
 
-  <a href={`/reading/${article.type}`} class="back-link">
-    ← 返回{typeLabel}
-  </a>
-</div>
+        <a href={`/reading/${article.type}`} class="back-link">
+          ← 返回{typeLabel}
+        </a>
+      </div>
     </article>
   </main>
 
@@ -195,6 +205,17 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     gap: 6px;
   }
 
+  .ruler-sizes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ruler-size {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+  }
+
   .ruler-swatch,
   .a11y-toolbar button.ruler-swatch {
     width: 18px;
@@ -221,12 +242,13 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     position: fixed;
     left: 0;
     width: 100%;
-    height: 36px;
+    height: 60px;
     background-color: rgba(240, 226, 180, 0.35);
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     pointer-events: none;
     z-index: 500;
+    transition: height 0.2s ease, background-color 0.2s ease;
   }
 
   .reading-ruler[hidden] {
@@ -296,7 +318,6 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     font-size: calc(1.05rem * var(--content-scale, 1));
   }
 
-  /* Markdown 内容样式 */
   :global(.markdown-content h1) {
     font-size: 1.8rem;
     font-weight: 700;
@@ -407,11 +428,11 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     color: var(--text-muted);
   }
 
-:global(.references-box a) {
-  color: var(--text-muted);
-  text-decoration: underline;
-  overflow-wrap: anywhere;
-}
+  :global(.references-box a) {
+    color: var(--text-muted);
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
 
   .article-footer {
     margin-top: 40px;
@@ -450,7 +471,6 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     }
   }
 
-  /* 护眼模式细节调整（全局变量已在 BaseLayout 中定义，作用于全站） */
   :global(:root.sensory-theme .a11y-toolbar button) {
     background-color: #232B38;
   }
@@ -473,6 +493,7 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
   const fontIncreaseBtn = document.querySelector('[data-font-increase]') as HTMLButtonElement | null;
   const rulerToggleBtn = document.querySelector('[data-toggle-ruler]') as HTMLButtonElement | null;
   const rulerSwatches = document.querySelectorAll('.ruler-swatch') as NodeListOf<HTMLButtonElement>;
+  const rulerSizeButtons = document.querySelectorAll('.ruler-size') as NodeListOf<HTMLButtonElement>;
 
   const fontScales = [0.85, 1, 1.15, 1.3, 1.5];
   let scaleIndex = 1;
@@ -504,10 +525,10 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     applyFontScale();
   });
 
-  // 阅读尺：跟随鼠标高亮当前阅读行
   function handleRulerMove(e: MouseEvent) {
     if (!ruler) return;
-    ruler.style.top = `${e.clientY - 18}px`;
+    const currentHeight = ruler.offsetHeight || 60;
+    ruler.style.top = `${e.clientY - currentHeight / 2}px`;
   }
 
   function setRulerEnabled(enabled: boolean) {
@@ -529,7 +550,6 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
 
   setRulerEnabled(localStorage.getItem('nw-ruler-enabled') === 'true');
 
-  // 阅读尺颜色选项
   function setRulerColor(color: string) {
     if (!ruler) return;
     ruler.style.backgroundColor = color;
@@ -548,4 +568,33 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
 
   const savedRulerColor = localStorage.getItem('nw-ruler-color') || rulerSwatches[0]?.dataset.rulerColor;
   if (savedRulerColor) setRulerColor(savedRulerColor);
+
+  function setRulerSize(size: string) {
+    if (!ruler) return;
+
+    ruler.style.height = `${size}px`;
+
+    rulerSizeButtons.forEach((button) => {
+      button.setAttribute(
+        'aria-pressed',
+        String(button.dataset.rulerSize === size)
+      );
+    });
+
+    localStorage.setItem('nw-ruler-size', size);
+  }
+
+  rulerSizeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const size = button.dataset.rulerSize;
+      if (size) setRulerSize(size);
+    });
+  });
+
+  const savedRulerSize =
+    localStorage.getItem('nw-ruler-size') ||
+    rulerSizeButtons[1]?.dataset.rulerSize ||
+    '60';
+
+  setRulerSize(savedRulerSize);
 </script>
