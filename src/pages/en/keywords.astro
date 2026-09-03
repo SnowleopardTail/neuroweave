@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+
+const keywordModules = import.meta.glob('/src/content/keywords/*.md', { eager: true });
+
+type KeywordEntry = {
+  term: string;
+  term_zh: string;
+  category: string;
+};
+
+const categoryMap: Record<string, string> = {
+  '核心概念': 'Core Concepts',
+  '范式与运动': 'Paradigms and Movements',
+  '体验与反应': 'Experiences and Responses',
+  '神经发育与诊断类别': 'Neurodevelopment and Diagnostic Categories',
+  '学习差异': 'Learning Differences',
+  '支持与语言实践': 'Support and Language Practices',
+};
+
+const categoryOrder = [
+  '核心概念',
+  '范式与运动',
+  '体验与反应',
+  '神经发育与诊断类别',
+  '学习差异',
+  '支持与语言实践',
+];
+
+const entries: KeywordEntry[] = Object.entries(keywordModules)
+  .filter(([path]) => !path.includes('TEMPLATE'))
+  .map(([, module]: [string, any]) => ({
+    term: module.frontmatter?.term || '',
+    term_zh: module.frontmatter?.term_zh || '',
+    category: module.frontmatter?.category || '其他',
+  }))
+  .sort((a, b) => a.term.localeCompare(b.term));
+
+const groups = categoryOrder
+  .map((category) => ({
+    category: categoryMap[category],
+    items: entries.filter((entry) => entry.category === category),
+  }))
+  .filter((group) => group.items.length > 0);
+---
+
+<BaseLayout title="Neuroweave - Keywords">
+  <Header subtitle="Terms and working definitions used in our translation work.">
+    <h1 slot="title">Keywords</h1>
+  </Header>
+
+  <main class="keywords-container">
+    <section class="keywords-intro">
+      <p>
+        The terms below reflect the terminology and working definitions
+        we currently use in our translation work.
+      </p>
+
+      <p>
+        These are working definitions rather than final or universally
+        accepted definitions. They are intended to improve consistency
+        within our translations and help readers understand how we use
+        these terms in specific contexts.
+      </p>
+    </section>
+
+    {groups.map((group) => (
+      <section class="keyword-group">
+        <h2>{group.category}</h2>
+
+        <div class="keyword-grid">
+          {group.items.map((entry) => (
+            <article class="keyword-card">
+              <h3>{entry.term}</h3>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  .keywords-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .keywords-intro {
+    background-color: var(--bg-card);
+    padding: 24px 32px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+    margin-bottom: 32px;
+  }
+
+  .keywords-intro p {
+    margin: 0 0 12px 0;
+    line-height: 1.8;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .keywords-intro p:last-child {
+    margin-bottom: 0;
+  }
+
+  .keyword-group {
+    margin-bottom: 36px;
+  }
+
+  .keyword-group h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--accent-border);
+  }
+
+  .keyword-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .keyword-card {
+    background-color: var(--bg-card);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .keyword-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .keywords-intro {
+      padding: 20px;
+    }
+
+    .keyword-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

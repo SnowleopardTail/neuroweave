@@ -7,6 +7,7 @@ tags: ["博物馆无障碍", "神经发散", "感官地图"]
 excerpt: "探讨如何使博物馆和美术馆对神经发散个体更具包容性和无障碍。"
 type: "translations"
 easyReadSlug: "museum-neurodivergent-accessibility-easy-read"
+englishSlug: "museum-neurodivergent-accessibility-en"
 ---
 
 打破屏障：提升博物馆与美术馆对神经发散个体的包容性

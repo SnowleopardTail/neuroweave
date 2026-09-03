@@ -7,6 +7,7 @@ tags: ["隐形受障", "向日葵倡议计划", "披露诊断", "不可见受障
 excerpt: "探讨隐形障碍和隐藏型障碍的概念，以及向日葵倡议计划如何帮助识别和支持受障个体。"
 type: "translations"
 easyReadSlug: "invisible-disabilities-sunflower-easy-read"
+englishSlug: "invisible-disabilities-sunflower-en"
 ---
 
 ## **'不被看见'：隐形与隐藏型障碍和向日葵倡议计划**

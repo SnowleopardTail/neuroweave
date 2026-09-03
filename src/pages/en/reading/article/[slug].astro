@@ -1,16 +1,16 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Header from '../../../components/Header.astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Header from '../../../../components/Header.astro';
 
-// 生成所有可能的静态路径
+// Generate all possible static paths
 export function getStaticPaths() {
   const allArticles = Object.entries({
-    ...import.meta.glob('/src/content/articles/*.md', { eager: true }),
-    ...import.meta.glob('/src/content/articles/**/*.md', { eager: true }),
+    ...import.meta.glob('/src/content/articles-en/*.md', { eager: true }),
+    ...import.meta.glob('/src/content/articles-en/**/*.md', { eager: true }),
   })
     .map(([path, module]: [string, any]) => {
       const filename = path.split('/').pop()?.replace('.md', '') || '';
-      
+
       return {
         slug: filename,
         ...module.frontmatter,
@@ -32,36 +32,83 @@ interface Props {
 const { article } = Astro.props;
 
 const typeLabels: Record<string, string> = {
-  translations: 'NW 翻译',
-  overviews: 'NW 概述',
-  conversations: 'NW 访谈',
+  translations: 'NW Translation',
+  'translations-ori': 'NW Translation',
+  overviews: 'NW Overview',
+  conversations: 'NW Conversations',
 };
-const typeLabel = typeLabels[article.type] || 'NW 内容';
-const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
+
+const typeLabel = typeLabels[article.type] || 'NW Content';
+const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
 ---
 
-<BaseLayout title={`${article.title} - Neuroweave 神经丝织者`}>
+<BaseLayout title={`${article.title} - Neuroweave`}>
   <Header subtitle={article.excerpt}>
     <h1 slot="title">{article.title}</h1>
   </Header>
 
   <main class="article-container" id="article-container">
-    <a href={`/reading/${article.type}`} class="back-link-top">← 返回{typeLabel}</a>
+    <a href="/en/reading/translations" class="back-link-top">
+      ← Back to {typeLabel}
+    </a>
 
     <div class="a11y-toolbar" id="a11y-toolbar">
       <div class="a11y-group">
-        <span class="a11y-label">字号</span>
-        <button type="button" data-font-decrease aria-label="减小字号">A-</button>
-        <button type="button" data-font-reset aria-label="重置字号">A</button>
-        <button type="button" data-font-increase aria-label="增大字号">A+</button>
+        <span class="a11y-label">Text size</span>
+        <button type="button" data-font-decrease aria-label="Decrease text size">A-</button>
+        <button type="button" data-font-reset aria-label="Reset text size">A</button>
+        <button type="button" data-font-increase aria-label="Increase text size">A+</button>
       </div>
-      <button type="button" class="a11y-toggle" data-toggle-ruler aria-pressed="false">阅读尺</button>
+
+      <button
+        type="button"
+        class="a11y-toggle"
+        data-toggle-ruler
+        aria-pressed="false"
+      >
+        Reading Ruler
+      </button>
+
       <div class="ruler-colors" id="ruler-colors">
-        <button type="button" class="ruler-swatch" data-ruler-color="rgba(240, 226, 180, 0.35)" style="--swatch-color: rgba(240, 200, 100, 0.9);" aria-label="暖黄色阅读尺"></button>
-        <button type="button" class="ruler-swatch" data-ruler-color="rgba(147, 197, 253, 0.35)" style="--swatch-color: rgba(96, 165, 250, 0.9);" aria-label="柔和蓝色阅读尺"></button>
-        <button type="button" class="ruler-swatch" data-ruler-color="rgba(167, 217, 180, 0.35)" style="--swatch-color: rgba(110, 190, 130, 0.9);" aria-label="柔和绿色阅读尺"></button>
-        <button type="button" class="ruler-swatch" data-ruler-color="rgba(216, 180, 213, 0.35)" style="--swatch-color: rgba(190, 130, 185, 0.9);" aria-label="柔和紫色阅读尺"></button>
-        <button type="button" class="ruler-swatch" data-ruler-color="rgba(255, 178, 178, 0.35)" style="--swatch-color: rgba(230, 130, 130, 0.9);" aria-label="柔和粉色阅读尺"></button>
+        <button
+          type="button"
+          class="ruler-swatch"
+          data-ruler-color="rgba(240, 226, 180, 0.35)"
+          style="--swatch-color: rgba(240, 200, 100, 0.9);"
+          aria-label="Warm yellow reading ruler"
+        ></button>
+
+        <button
+          type="button"
+          class="ruler-swatch"
+          data-ruler-color="rgba(147, 197, 253, 0.35)"
+          style="--swatch-color: rgba(96, 165, 250, 0.9);"
+          aria-label="Soft blue reading ruler"
+        ></button>
+
+        <button
+          type="button"
+          class="ruler-swatch"
+          data-ruler-color="rgba(167, 217, 180, 0.35)"
+          style="--swatch-color: rgba(110, 190, 130, 0.9);"
+          aria-label="Soft green reading ruler"
+        ></button>
+
+        <button
+          type="button"
+          class="ruler-swatch"
+          data-ruler-color="rgba(216, 180, 213, 0.35)"
+          style="--swatch-color: rgba(190, 130, 185, 0.9);"
+          aria-label="Soft purple reading ruler"
+        ></button>
+
+        <button
+          type="button"
+          class="ruler-swatch"
+          data-ruler-color="rgba(255, 178, 178, 0.35)"
+          style="--swatch-color: rgba(230, 130, 130, 0.9);"
+          aria-label="Soft pink reading ruler"
+        ></button>
       </div>
     </div>
 
@@ -69,13 +116,17 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
       <span class="type-badge">{contentLabel}</span>
 
       <div class="article-meta">
-        <span class="meta-item">日期：{article.date}</span>
+        <span class="meta-item">Date: {article.date}</span>
+
         {article.originalAuthor && (
-          <span class="meta-item">原作者：{article.originalAuthor}</span>
+          <span class="meta-item">
+            Original author: {article.originalAuthor}
+          </span>
         )}
+
         {article.author && (
           <span class="meta-item">
-            {article.type === 'translations' ? '翻译' : '整理'}：{article.author}
+            {article.type === 'translations' ? 'Translation' : 'Prepared by'}: {article.author}
           </span>
         )}
       </div>
@@ -83,7 +134,7 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
       {article.tags && article.tags.length > 0 && (
         <div class="article-tags">
           {article.tags.map((tag: string) => (
-            <a href={`/tags/${tag}`} class="tag-link">#{tag}</a>
+            <a href={`/en/tags/${tag}`} class="tag-link">#{tag}</a>
           ))}
         </div>
       )}
@@ -95,28 +146,19 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
       </div>
 
       <div class="article-footer">
-  {article.originalSlug && (
-    <a
-      href={`/reading/article/${article.originalSlug}`}
-      class="back-link original-link"
-    >
-      阅读完整版
-    </a>
-  )}
+        {article.originalSlug && (
+          <a
+            href={`/en/reading/article/${article.originalSlug}`}
+            class="back-link original-link"
+          >
+            Read full version
+          </a>
+        )}
 
-  {article.englishSlug && (
-    <a
-      href={`/en/reading/article/${article.englishSlug}`}
-      class="back-link original-link"
-    >
-      阅读英文原文 →
-    </a>
-  )}
-
-  <a href={`/reading/${article.type}`} class="back-link">
-    ← 返回{typeLabel}
-  </a>
-</div>
+        <a href="/en/reading/translations" class="back-link">
+          ← Back to {typeLabel}
+        </a>
+      </div>
     </article>
   </main>
 
@@ -296,7 +338,6 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     font-size: calc(1.05rem * var(--content-scale, 1));
   }
 
-  /* Markdown 内容样式 */
   :global(.markdown-content h1) {
     font-size: 1.8rem;
     font-weight: 700;
@@ -407,11 +448,11 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     color: var(--text-muted);
   }
 
-:global(.references-box a) {
-  color: var(--text-muted);
-  text-decoration: underline;
-  overflow-wrap: anywhere;
-}
+  :global(.references-box a) {
+    color: var(--text-muted);
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
 
   .article-footer {
     margin-top: 40px;
@@ -450,7 +491,6 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     }
   }
 
-  /* 护眼模式细节调整（全局变量已在 BaseLayout 中定义，作用于全站） */
   :global(:root.sensory-theme .a11y-toolbar button) {
     background-color: #232B38;
   }
@@ -484,9 +524,14 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
   }
 
   const savedScaleIndex = localStorage.getItem('nw-font-scale-index');
+
   if (savedScaleIndex !== null) {
-    scaleIndex = Math.min(Math.max(parseInt(savedScaleIndex, 10) || 1, 0), fontScales.length - 1);
+    scaleIndex = Math.min(
+      Math.max(parseInt(savedScaleIndex, 10) || 1, 0),
+      fontScales.length - 1
+    );
   }
+
   applyFontScale();
 
   fontDecreaseBtn?.addEventListener('click', () => {
@@ -504,7 +549,7 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     applyFontScale();
   });
 
-  // 阅读尺：跟随鼠标高亮当前阅读行
+  // Reading ruler
   function handleRulerMove(e: MouseEvent) {
     if (!ruler) return;
     ruler.style.top = `${e.clientY - 18}px`;
@@ -512,13 +557,16 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
 
   function setRulerEnabled(enabled: boolean) {
     if (!ruler || !rulerToggleBtn) return;
+
     ruler.hidden = !enabled;
     rulerToggleBtn.setAttribute('aria-pressed', String(enabled));
+
     if (enabled) {
       document.addEventListener('mousemove', handleRulerMove);
     } else {
       document.removeEventListener('mousemove', handleRulerMove);
     }
+
     localStorage.setItem('nw-ruler-enabled', String(enabled));
   }
 
@@ -529,13 +577,19 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
 
   setRulerEnabled(localStorage.getItem('nw-ruler-enabled') === 'true');
 
-  // 阅读尺颜色选项
+  // Reading ruler colors
   function setRulerColor(color: string) {
     if (!ruler) return;
+
     ruler.style.backgroundColor = color;
+
     rulerSwatches.forEach((swatch) => {
-      swatch.setAttribute('aria-pressed', String(swatch.dataset.rulerColor === color));
+      swatch.setAttribute(
+        'aria-pressed',
+        String(swatch.dataset.rulerColor === color)
+      );
     });
+
     localStorage.setItem('nw-ruler-color', color);
   }
 
@@ -546,6 +600,11 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
     });
   });
 
-  const savedRulerColor = localStorage.getItem('nw-ruler-color') || rulerSwatches[0]?.dataset.rulerColor;
-  if (savedRulerColor) setRulerColor(savedRulerColor);
+  const savedRulerColor =
+    localStorage.getItem('nw-ruler-color') ||
+    rulerSwatches[0]?.dataset.rulerColor;
+
+  if (savedRulerColor) {
+    setRulerColor(savedRulerColor);
+  }
 </script>

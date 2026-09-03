@@ -20,19 +20,20 @@ const articles = Object.entries(allModules)
       return null;
     }
     
-    return {
-      filename,
-      slug: filename,
-      title: frontmatter.title,
-      date: frontmatter.date,
-      author: frontmatter.author,
-      tags: frontmatter.tags || [],
-      excerpt: frontmatter.excerpt,
-      type: frontmatter.type,
-      easyReadSlug: frontmatter.easyReadSlug,
-      isEasyRead: frontmatter.isEasyRead,
-      originalSlug: frontmatter.originalSlug,
-    };
+  return {
+  filename,
+  slug: filename,
+  title: frontmatter.title,
+  date: frontmatter.date,
+  author: frontmatter.author,
+  tags: frontmatter.tags || [],
+  excerpt: frontmatter.excerpt,
+  type: frontmatter.type,
+  easyReadSlug: frontmatter.easyReadSlug,
+  isEasyRead: frontmatter.isEasyRead,
+  originalSlug: frontmatter.originalSlug,
+  englishSlug: frontmatter.englishSlug,
+};
   })
   .filter((a: any) => a !== null)
   .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -78,22 +79,62 @@ const allTags = Array.from(
                     </div>
                   )}
                   <div class="read-links">
-                    {article.isEasyRead ? (
-                      <>
-                        <a href={`/reading/article/${article.slug}`} class="read-more read-more-secondary">阅读易读版 →</a>
-                        {article.originalSlug && (
-                          <a href={`/reading/article/${article.originalSlug}`} class="read-more">阅读完整版 →</a>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <a href={`/reading/article/${article.slug}`} class="read-more">阅读完整版 →</a>
-                        {article.easyReadSlug && (
-                          <a href={`/reading/article/${article.easyReadSlug}`} class="read-more read-more-secondary">阅读易读版 →</a>
-                        )}
-                      </>
-                    )}
-                  </div>
+  {article.isEasyRead ? (
+    <>
+      <a
+        href={`/reading/article/${article.slug}`}
+        class="read-more read-more-secondary"
+      >
+        阅读易读版 →
+      </a>
+
+      {article.originalSlug && (
+        <a
+          href={`/reading/article/${article.originalSlug}`}
+          class="read-more"
+        >
+          阅读完整版 →
+        </a>
+      )}
+
+      {article.englishSlug && (
+        <a
+          href={`/en/reading/article/${article.englishSlug}`}
+          class="read-more"
+        >
+          阅读英文原文 →
+        </a>
+      )}
+    </>
+  ) : (
+    <>
+      <a
+        href={`/reading/article/${article.slug}`}
+        class="read-more"
+      >
+        阅读完整版 →
+      </a>
+
+      {article.easyReadSlug && (
+        <a
+          href={`/reading/article/${article.easyReadSlug}`}
+          class="read-more read-more-secondary"
+        >
+          阅读易读版 →
+        </a>
+      )}
+
+      {article.englishSlug && (
+        <a
+          href={`/en/reading/article/${article.englishSlug}`}
+          class="read-more"
+        >
+          阅读英文原文 →
+        </a>
+              )}
+              </>
+              )}
+              </div>
                 </div>
               </article>
             );

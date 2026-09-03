@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+
+// Historical surveys will accumulate over time, with the newest listed first.
+const surveys = [
+  {
+    title: 'NW Neuroweave 2026 Mid-Year Reader Feedback Survey',
+    link: 'https://tally.so/r/Y5qVQJ',
+    status: 'Closed',
+  },
+];
+---
+
+<BaseLayout title="Neuroweave - Feedback">
+  <Header subtitle="Tell us what you think or share your suggestions.">
+    <h1 slot="title">Feedback</h1>
+  </Header>
+
+  <main class="feedback-container">
+    <section class="feedback-card">
+      <h2>We Want to Hear from You</h2>
+      <p>
+        Whether you have corrections to an article, suggestions about our
+        translations, or ideas about accessibility and the reading experience,
+        we would be happy to hear from you through the channels below.
+      </p>
+    </section>
+
+    <section class="feedback-card">
+      <h2>Information Needs Survey</h2>
+      <p>
+        We conduct a reader information needs survey approximately every six
+        months. Publicly shareable survey results will be added here over time,
+        so this section will continue to grow.
+      </p>
+
+      <div class="survey-list">
+        {surveys.map((survey) => (
+          <a
+            class="survey-item"
+            href={survey.link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="survey-status">{survey.status}</span>
+            <span class="survey-title">{survey.title}</span>
+            <span class="survey-arrow">→</span>
+          </a>
+        ))}
+      </div>
+
+      <p class="hint">
+        Historical survey results will be added here over time. There are
+        currently no results available for public sharing.
+      </p>
+    </section>
+
+    <section class="feedback-card">
+      <h2>Email Us</h2>
+      <p>
+        Click the button below to open your email client with our address
+        filled in automatically.
+      </p>
+
+      <a
+        class="mailto-btn"
+        href="mailto:Neuroweave_translation_team@proton.me?subject=Website%20Feedback"
+      >
+        ✉️ Send Feedback by Email
+      </a>
+    </section>
+
+    <section class="feedback-card">
+      <h2>Other Ways to Connect</h2>
+
+      <div class="social-links">
+        <a
+          href="https://www.xiaohongshu.com/user/profile/64ad11b5000000001c02bd17"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Xiaohongshu
+        </a>
+
+        <a
+          href="https://weibo.com/u/6090388163"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Weibo
+        </a>
+
+        <a
+          href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WeChat Official Account
+        </a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .feedback-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .feedback-card {
+    background-color: var(--bg-card);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .feedback-card h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  .feedback-card p {
+    margin: 0 0 12px 0;
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  .feedback-card .hint {
+    margin: 12px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .survey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .survey-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .survey-item:hover {
+    border-color: var(--text-primary);
+  }
+
+  .survey-status {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: var(--card-header-bg, #F0E2B4);
+    color: var(--text-primary);
+  }
+
+  .survey-title {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  .survey-arrow {
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .mailto-btn {
+    display: inline-block;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .mailto-btn:hover {
+    opacity: 0.85;
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .social-links a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .social-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .feedback-card {
+      padding: 24px 20px;
+    }
+  }
+</style>
