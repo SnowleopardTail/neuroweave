@@ -42,14 +42,24 @@ const navItems = isEnglish
         {isEnglish ? '中文' : 'English'}
       </a>
 
+      <!-- 无衬线字体切换按钮 -->
       <button
-     type="button"
-     class="theme-toggle-btn"
-     id="theme-toggle-btn"
-      aria-pressed="false"
-     >
-       {isEnglish ? 'Sensory Mode' : '暗色模式'}
-   </button>
+        type="button"
+        class="font-toggle-btn"
+        id="font-toggle-btn"
+        aria-pressed="false"
+      >
+        {isEnglish ? 'Sans-serif' : '无衬线'}
+      </button>
+
+      <button
+        type="button"
+        class="theme-toggle-btn"
+        id="theme-toggle-btn"
+        aria-pressed="false"
+      >
+        {isEnglish ? 'Sensory Mode' : '暗色模式'}
+      </button>
     </div>
   </div>
 </nav>
@@ -62,25 +72,25 @@ const navItems = isEnglish
   }
 
   nav .page-width {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-}
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+  }
 
   .nav-links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-}
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
 
   .nav-links a,
   .nav-links span {
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
   nav a {
     color: var(--text-primary);
@@ -109,6 +119,8 @@ const navItems = isEnglish
     border-radius: 6px;
   }
 
+  /* 复用控制按钮样式 */
+  .font-toggle-btn,
   .theme-toggle-btn {
     background-color: transparent;
     border: 1px solid var(--accent-border);
@@ -122,10 +134,12 @@ const navItems = isEnglish
     transition: all 0.2s ease;
   }
 
+  .font-toggle-btn:hover,
   .theme-toggle-btn:hover {
     border-color: var(--text-primary);
   }
 
+  .font-toggle-btn[aria-pressed="true"],
   .theme-toggle-btn[aria-pressed="true"] {
     background-color: var(--text-primary);
     color: var(--bg-card);
@@ -135,22 +149,39 @@ const navItems = isEnglish
 
 <script>
   const themeBtn = document.getElementById('theme-toggle-btn');
+  const fontBtn = document.getElementById('font-toggle-btn');
 
   function syncButtonState() {
     themeBtn?.setAttribute(
       'aria-pressed',
       String(document.documentElement.classList.contains('sensory-theme'))
     );
+    // 如果给 <html> 挂了 sans-serif-theme 类名，说明启用了无衬线
+    fontBtn?.setAttribute(
+      'aria-pressed',
+      String(document.documentElement.classList.contains('sans-serif-theme'))
+    );
   }
 
   syncButtonState();
 
+  // 暗色模式切换
   themeBtn?.addEventListener('click', () => {
     const enabled =
       !document.documentElement.classList.contains('sensory-theme');
 
     document.documentElement.classList.toggle('sensory-theme', enabled);
     localStorage.setItem('nw-sensory-theme', String(enabled));
+    syncButtonState();
+  });
+
+  // 字体切换（默认是衬线，点击激活 sans-serif-theme）
+  fontBtn?.addEventListener('click', () => {
+    const enabled =
+      !document.documentElement.classList.contains('sans-serif-theme');
+
+    document.documentElement.classList.toggle('sans-serif-theme', enabled);
+    localStorage.setItem('nw-sans-serif-theme', String(enabled));
     syncButtonState();
   });
 </script>
