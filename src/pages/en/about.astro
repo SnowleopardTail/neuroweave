@@ -1,95 +1,127 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
 
-const aboutModules = import.meta.glob('/src/content/about.md', { eager: true });
+const aboutModules = import.meta.glob('/src/content/about-en.md', { eager: true });
 const aboutEntry = Object.values(aboutModules)[0] as any;
 const AboutContent = aboutEntry?.default;
 
-const ethicsModules = import.meta.glob('/src/content/about-ethics.md', { eager: true });
+const ethicsModules = import.meta.glob('/src/content/about-ethics-en.md', { eager: true });
 const ethicsEntry = Object.values(ethicsModules)[0] as any;
 const AboutEthicsContent = ethicsEntry?.default;
 
-const teamModules = import.meta.glob('/src/content/about-team.md', { eager: true });
+const teamModules = import.meta.glob('/src/content/about-team-en.md', { eager: true });
 const teamEntry = Object.values(teamModules)[0] as any;
 const TeamContent = teamEntry?.default;
 
-const workstyleModules = import.meta.glob('/src/content/about-workstyle.md', { eager: true });
+const workstyleModules = import.meta.glob('/src/content/about-workstyle-en.md', { eager: true });
 const workstyleEntry = Object.values(workstyleModules)[0] as any;
 const WorkstyleContent = workstyleEntry?.default;
 ---
 
-<BaseLayout title="Neuroweave 神经丝织者 - 关于我们">
-  <Header subtitle="关注神经多样性的中文知识共享社群。">
-    <h1 slot="title">关于我们</h1>
+<BaseLayout title="Neuroweave - About Us">
+  <Header subtitle="A Chinese-language knowledge-sharing group focused on neurodiversity.">
+    <h1 slot="title">About Us</h1>
   </Header>
 
   <main class="about-container">
-    <section class="about-card">
-      <h2>我们是谁</h2>
-      <div class="markdown-content">
-        {AboutContent ? <AboutContent /> : <p>内容整理中。</p>}
-      </div>
-    </section>
-
-      <section class="about-card">
-      <h2>神经丝织者的运作方式</h2>
-      <div class="markdown-content">
-        {WorkstyleContent ? <WorkstyleContent /> : <p>内容整理中。</p>}
-      </div>
-    </section>
-
-      <section class="about-card">
-      <h2>神经丝织者重视的伦理和原则</h2>
-      <div class="markdown-content">
-        {AboutContent ? <AboutEthicsContent /> : <p>内容整理中。</p>}
-      </div>
-    </section>
-
-
 
     <section class="about-card">
-      <h2>小组成员</h2>
+      <div class="markdown-content">
+        {AboutContent ? <AboutContent /> : <p>Content coming soon.</p>}
+      </div>
+    </section>
+
+    <section class="about-card">
+      <h2>How Neuroweave Works</h2>
+      <div class="markdown-content">
+        {WorkstyleContent
+          ? <WorkstyleContent />
+          : <p>Content coming soon.</p>}
+      </div>
+    </section>
+
+    <section class="about-card">
+      <h2>Our Ethics and Principles</h2>
+      <div class="markdown-content">
+        {AboutEthicsContent
+          ? <AboutEthicsContent />
+          : <p>Content coming soon.</p>}
+      </div>
+    </section>
+
+    <section class="about-card">
+      <h2>Our Team</h2>
       <div class="team-content">
-        {TeamContent ? <TeamContent /> : <p>内容整理中。</p>}
+        {TeamContent
+          ? <TeamContent />
+          : <p>Content coming soon.</p>}
       </div>
     </section>
 
     <section class="about-card">
-      <h2>我们做什么</h2>
+      <h2>What We Do</h2>
+
       <div class="about-grid">
         <div class="about-item">
-          <h3>NW 翻译</h3>
-          <p>翻译海外神经发散/神经多样性相关的文章、事实清单与研究综述，降低中文读者的阅读门槛。</p>
-          <a href="/reading/translations">进入文章列表 →</a>
+          <h3>NW Translation</h3>
+          <p>
+            We translate articles, fact sheets, and research reviews about
+            neurodivergence and neurodiversity, making these resources more
+            accessible to Chinese-speaking readers.
+          </p>
+          <a href="/en/reading/translations">View translations →</a>
         </div>
+
         <div class="about-item">
-          <h3>NW 概述</h3>
-          <p>由小组成员对某个神经多样性主题进行整理与概述，提供一份易懂的入门参考。</p>
-          <a href="/reading/overviews">进入概述列表 →</a>
+          <h3>NW Overview</h3>
+          <p>
+            Our group members prepare overviews of different topics related to
+            neurodiversity, providing accessible introductions and references.
+          </p>
+          <a href="/en/reading/overviews">View overviews →</a>
         </div>
+
         <div class="about-item">
-          <h3>NW 访谈</h3>
-          <p>记录我们与其他自倡导群体、公益团体及实践者的对话过程，呈现更多元的真实经验。</p>
-          <a href="/reading/conversations">进入访谈列表 →</a>
+          <h3>NW Conversations</h3>
+          <p>
+            We document conversations with self-advocacy groups, nonprofit
+            organizations, practitioners, and others, bringing together a wider
+            range of lived experiences and perspectives.
+          </p>
+          <a href="/en/reading/conversations">View conversations →</a>
         </div>
       </div>
     </section>
 
     <section class="about-card">
-      <h2>无障碍与感官友好</h2>
+      <h2>Accessibility and Sensory Friendliness</h2>
       <p>
-        我们希望阅读体验对更多人友好。目前网站提供全文搜索、标签检索、字号调整、
-        阅读尺与低对比度的暗色模式（可在顶部导航栏切换）。如果你有更多无障碍方面的建议，
-        欢迎通过<a href="/feedback">反馈页面</a>告诉我们。
+        We want the reading experience to be accessible and comfortable for as
+        many people as possible. The website currently provides full-text
+        search, tag-based browsing, text-size adjustment, a reading ruler, and
+        a sensory-friendly dark mode, which can be switched on from the top
+        navigation bar.
+        If you have suggestions about accessibility, please let us know through
+        the <a href="/en/feedback">feedback page</a>.
       </p>
     </section>
 
     <section class="about-card">
-      <h2>合作伙伴</h2>
+      <h2>Partners</h2>
+
       <div class="partners-grid">
-        <a class="partner-item" href="https://abilitybeyondborders.org" target="_blank" rel="noopener noreferrer">
-          <img src="/ability-beyond-borders.png" alt="Ability Beyond Borders" />
+        <a
+          class="partner-item"
+          href="https://abilitybeyondborders.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/ability-beyond-borders.png"
+            alt="Ability Beyond Borders"
+          />
+
           <div class="partner-info">
             <h3>Ability Beyond Borders</h3>
             <p>Working Together for Equality &amp; Inclusion</p>
@@ -97,6 +129,7 @@ const WorkstyleContent = workstyleEntry?.default;
         </a>
       </div>
     </section>
+
   </main>
 </BaseLayout>
 
@@ -153,6 +186,12 @@ const WorkstyleContent = workstyleEntry?.default;
   .markdown-content :global(u) {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .markdown-content :global(h1),
+  .markdown-content :global(h2),
+  .markdown-content :global(h3) {
+    color: var(--text-primary);
   }
 
   .team-content :global(.team-member) {

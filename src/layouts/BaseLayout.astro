@@ -7,22 +7,30 @@ interface Props {
 }
 
 const { title = "Neuroweave" } = Astro.props;
+
+// 根据 URL 判断当前语言
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={lang === 'en' ? 'en' : 'zh-CN'}>
   <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
 
-
-  <link rel="icon" type="image/png" href="/neuroweavelogo.png" />
+    <!-- 基础 Favicon 引入 -->
+    <link rel="icon" type="image/png" href="/neuroweavelogo.png" />
+    <link rel="shortcut icon" href="/neuroweavelogo.png" />
+    <link rel="apple-touch-icon" href="/neuroweavelogo.png" />
 
     <!-- 思源宋体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    >
 
     <!-- 尽早应用护眼模式，避免切换主题时的闪烁 -->
     <script is:inline>

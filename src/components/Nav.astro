@@ -1,24 +1,56 @@
 ---
-/* 顶栏导航：所有页面完全一致 */
+const isEnglish = Astro.url.pathname.startsWith('/en');
+
+const navItems = isEnglish
+  ? [
+      { href: '/en/', label: 'Home' },
+      { href: '/en/about', label: 'About' },
+      { href: '/en/reading/translations', label: 'NW Translation' },
+      { href: '/en/reading/overviews', label: 'NW Overview' },
+      { href: '/en/reading/conversations', label: 'NW Conversations' },
+      { href: '/en/keywords', label: 'Keywords' },
+      { href: '/en/feedback', label: 'Feedback' },
+    ]
+  : [
+      { href: '/', label: '首页' },
+      { href: '/about', label: '关于我们' },
+      { href: '/reading/translations', label: 'NW 翻译' },
+      { href: '/reading/overviews', label: 'NW 概述' },
+      { href: '/reading/conversations', label: 'NW 访谈' },
+      { href: '/keywords', label: '关键词整理' },
+      { href: '/feedback', label: '反馈' },
+    ];
 ---
+
 <nav>
   <div class="page-width">
     <div class="nav-links">
-      <a href="/">首页</a>
-      <span>｜</span>
-      <a href="/about">关于我们</a>
-      <span>｜</span>
-      <a href="/reading/translations">NW 翻译</a>
-      <span>｜</span>
-      <a href="/reading/overviews">NW 概述</a>
-      <span>｜</span>
-      <a href="/reading/conversations">NW 访谈</a>
-      <span>｜</span>
-      <a href="/keywords">关键词整理</a>
-      <span>｜</span>
-      <a href="/feedback">反馈</a>
+      {navItems.map((item, index) => (
+        <>
+          <a href={item.href}>{item.label}</a>
+          {index < navItems.length - 1 && <span>｜</span>}
+        </>
+      ))}
     </div>
-    <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-pressed="false">护眼模式</button>
+
+    <div class="nav-actions">
+      <a
+        class="language-switch"
+        href={isEnglish ? '/' : '/en/'}
+        aria-label={isEnglish ? '切换到中文' : 'Switch to English'}
+      >
+        {isEnglish ? '中文' : 'English'}
+      </a>
+
+      <button
+     type="button"
+     class="theme-toggle-btn"
+     id="theme-toggle-btn"
+      aria-pressed="false"
+     >
+       {isEnglish ? 'Sensory Mode' : '暗色模式'}
+   </button>
+    </div>
   </div>
 </nav>
 
@@ -28,6 +60,7 @@
     padding: 16px 0;
     font-size: 0.95rem;
   }
+
   nav .page-width {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +68,41 @@
     justify-content: space-between;
     gap: 8px 12px;
   }
+
   .nav-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 12px;
   }
+
   nav a {
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
   }
+
   nav a:hover {
     text-decoration: underline;
   }
+
   nav span {
     color: #B5A886;
     user-select: none;
   }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .language-switch {
+    padding: 4px 10px;
+    border: 1px solid var(--accent-border);
+    border-radius: 6px;
+  }
+
   .theme-toggle-btn {
     background-color: transparent;
     border: 1px solid var(--accent-border);
@@ -65,9 +115,11 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
+
   .theme-toggle-btn:hover {
     border-color: var(--text-primary);
   }
+
   .theme-toggle-btn[aria-pressed="true"] {
     background-color: var(--text-primary);
     color: var(--bg-card);
@@ -79,13 +131,18 @@
   const themeBtn = document.getElementById('theme-toggle-btn');
 
   function syncButtonState() {
-    themeBtn?.setAttribute('aria-pressed', String(document.documentElement.classList.contains('sensory-theme')));
+    themeBtn?.setAttribute(
+      'aria-pressed',
+      String(document.documentElement.classList.contains('sensory-theme'))
+    );
   }
 
   syncButtonState();
 
   themeBtn?.addEventListener('click', () => {
-    const enabled = !document.documentElement.classList.contains('sensory-theme');
+    const enabled =
+      !document.documentElement.classList.contains('sensory-theme');
+
     document.documentElement.classList.toggle('sensory-theme', enabled);
     localStorage.setItem('nw-sensory-theme', String(enabled));
     syncButtonState();

@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Card from '../../components/Card.astro';
+---
+
+<BaseLayout title="Neuroweave - Home">
+  <!-- Page Header -->
+  <Header subtitle="Reject Neuronormativity, Embrace Diversity.">
+    <h1 slot="title">Neuroweave</h1>
+  </Header>
+
+  <!-- Main content -->
+  <main>
+    <!-- About Us -->
+    <Card title="About Us" href="/en/about" linkText="Learn more about us →">
+      Neuroweave (NW) is a Chinese-language knowledge-sharing group focused on
+      neurodiversity. Through translation, writing, interviews, and exchange,
+      we connect people from different backgrounds, share resources and
+      experiences, explore neurodiversity, and encourage everyone to choose
+      the language and narratives that work best for them.
+    </Card>
+
+    <!-- NW Translation -->
+    <Card title="NW Translation" href="/en/reading/translations" linkText="View articles →">
+      Here you can read articles on neurodivergence and neurodiversity that we
+      have translated.
+    </Card>
+
+    <!-- NW Overview -->
+    <Card title="NW Overview" href="/en/reading/overviews" linkText="View overviews →">
+      Here you can find overviews and resources on different topics related to
+      neurodiversity, prepared by members of our group.
+    </Card>
+
+    <!-- NW Conversations -->
+    <Card title="NW Conversations" href="/en/reading/conversations" linkText="View conversations →">
+      Here you can read conversations between us and self-advocacy groups,
+      nonprofit organizations, practitioners, and others working in the field.
+    </Card>
+
+    <!-- Keywords -->
+    <Card title="Keywords" href="/en/keywords" linkText="View keywords →">
+      Here we document our choices and understanding of terminology encountered
+      during the translation process, as a set of working definitions that may
+      evolve over time.
+    </Card>
+
+    <!-- Feedback -->
+    <Card title="Feedback" href="/en/feedback" linkText="View feedback →">
+      Here we record and update feedback from our readers, including our latest
+      information needs survey.
+    </Card>
+  </main>
+</BaseLayout>
