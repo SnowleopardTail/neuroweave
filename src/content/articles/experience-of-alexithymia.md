@@ -15,7 +15,7 @@
 title: "述情障碍的体验(可能)是怎样的？"
 date: "2026-09-01"
 author: "Neuroweave 小组"
-tags: ["述情障碍", "感官加工和处理", “Alexithymia"]
+tags: ["述情障碍", "感官加工和处理", "Alexithymia"]
 excerpt: "什么是述情障碍；述情障碍与内感觉的关联；述情障碍的体验可能会是什么样的"
 type: "overviews"
 easyReadSlug: "experience-of-alexithymia-easy-read"
