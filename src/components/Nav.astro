@@ -62,19 +62,25 @@ const navItems = isEnglish
   }
 
   nav .page-width {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px 12px;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
 
   .nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+  .nav-links a,
+  .nav-links span {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
   nav a {
     color: var(--text-primary);
