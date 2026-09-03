@@ -33,16 +33,55 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
         {isEnglish ? 'Weibo' : '微博'}
       </a>
 
-      <a
-        href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <button type="button" class="wechat-button" id="wechat-button">
         {isEnglish ? 'WeChat Official Account' : '微信公众号'}
-      </a>
+      </button>
     </div>
   </div>
 </footer>
+
+<!-- 微信公众号二维码弹窗 -->
+<div
+  class="wechat-modal"
+  id="wechat-modal"
+  hidden
+  aria-hidden="true"
+>
+  <div class="wechat-modal-backdrop" id="wechat-modal-backdrop"></div>
+
+  <div
+    class="wechat-modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="wechat-modal-title"
+  >
+    <button
+      type="button"
+      class="wechat-close"
+      id="wechat-close"
+      aria-label={isEnglish ? 'Close' : '关闭'}
+    >
+      ×
+    </button>
+
+    <h2 id="wechat-modal-title">
+      {isEnglish ? 'WeChat Official Account' : '微信公众号'}
+    </h2>
+
+    <img
+  src="/wechat-qr.jpg"
+  alt={isEnglish
+    ? 'QR code for the Neuroweave WeChat Official Account'
+    : 'Neuroweave 神经丝织者微信公众号二维码'}
+/>
+
+<p>
+  {isEnglish
+    ? 'Scan the QR code to follow us on WeChat.'
+    : '使用微信扫描二维码关注我们。'}
+</p>
+  </div>
+</div>
 
 <style>
   footer {
@@ -75,14 +114,95 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
     gap: 16px;
   }
 
-  .social-links a {
+  .social-links a,
+  .wechat-button {
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
+    font-family: inherit;
+    font-size: inherit;
   }
 
-  .social-links a:hover {
+  .wechat-button {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .social-links a:hover,
+  .wechat-button:hover {
     text-decoration: underline;
+  }
+
+  /* 微信二维码弹窗 */
+  .wechat-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .wechat-modal[hidden] {
+    display: none;
+  }
+
+  .wechat-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .wechat-modal-content {
+    position: relative;
+    z-index: 1;
+    width: min(90vw, 420px);
+    padding: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-border);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+    text-align: center;
+  }
+
+  .wechat-modal-content h2 {
+    margin: 0 0 24px;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+  }
+
+  .wechat-modal-content img {
+    display: block;
+    width: min(280px, 100%);
+    height: auto;
+    margin: 0 auto 20px;
+    border-radius: 8px;
+  }
+
+  .wechat-modal-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .wechat-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+
+  .wechat-close:hover {
+    color: var(--text-primary);
   }
 
   @media (max-width: 640px) {
@@ -101,5 +221,42 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
       justify-content: center;
       flex-wrap: wrap;
     }
+
+    .wechat-modal-content {
+      padding: 28px 20px;
+    }
   }
 </style>
+
+<script>
+  const wechatButton = document.getElementById('wechat-button');
+  const wechatModal = document.getElementById('wechat-modal');
+  const wechatClose = document.getElementById('wechat-close');
+  const wechatBackdrop = document.getElementById('wechat-modal-backdrop');
+
+  function openWechatModal() {
+    if (!wechatModal) return;
+
+    wechatModal.hidden = false;
+    wechatModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeWechatModal() {
+    if (!wechatModal) return;
+
+    wechatModal.hidden = true;
+    wechatModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  wechatButton?.addEventListener('click', openWechatModal);
+  wechatClose?.addEventListener('click', closeWechatModal);
+  wechatBackdrop?.addEventListener('click', closeWechatModal);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && wechatModal && !wechatModal.hidden) {
+      closeWechatModal();
+    }
+  });
+</script>
