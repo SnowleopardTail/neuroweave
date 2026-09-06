@@ -93,7 +93,7 @@ const contentLabel = article.isEasyRead ? '易读版' : typeLabel;
       {article.tags && article.tags.length > 0 && (
         <div class="article-tags">
           {article.tags.map((tag: string) => (
-            <a href={`/tags/${tag}`} class="tag-link">#{tag}</a>
+            <a href={`/tags/${encodeURIComponent(tag)}`} class="tag-link">#{tag}</a>
           ))}
         </div>
       )}

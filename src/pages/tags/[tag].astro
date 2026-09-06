@@ -82,6 +82,8 @@ const articles = allArticles
   .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 const otherTags = allTags.filter((t: string) => t !== tag);
+
+const tagHref = (value: string) => `/tags/${encodeURIComponent(value)}`;
 ---
 
 <BaseLayout title={`标签: ${tag} - Neuroweave 神经丝织者`}>
@@ -104,7 +106,7 @@ const otherTags = allTags.filter((t: string) => t !== tag);
               <p class="excerpt">{article.excerpt}</p>
               <div class="tags-inline">
                 {(article.tags || []).map((t: string) => (
-                  <a href={`/tags/${t}`} class={`tag-badge ${t === tag ? 'active' : ''}`}>
+                  <a href={tagHref(t)} class={`tag-badge ${t === tag ? 'active' : ''}`}>
                     {t}
                   </a>
                 ))}
@@ -125,7 +127,7 @@ const otherTags = allTags.filter((t: string) => t !== tag);
           {otherTags.map(t => {
             const count = allArticles.filter((a: any) => (a.tags || []).includes(t)).length;
             return (
-              <a href={`/tags/${t}`} class="tag-cloud-item" title={`${count} 篇文章`}>
+              <a href={tagHref(t)} class="tag-cloud-item" title={`${count} 篇文章`}>
                 {t}
                 <span class="count">({count})</span>
               </a>

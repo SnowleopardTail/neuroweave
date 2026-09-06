@@ -3,30 +3,30 @@ import "@pagefind/default-ui/css/ui.css";
 
 export const prerender = true;
 
-const isEnglish = Astro.url.pathname.startsWith('/en');
+const isEnglish = Astro.url.pathname.startsWith("/en");
 
 const text = isEnglish
   ? {
-      search: 'Search',
-      searchHint: 'Search articles...',
+      search: "Search",
+      searchHint: "Search articles...",
       searchCaption:
-        'Click 🔍 and enter keywords to find articles and content you may be looking for.',
-      close: 'Close search',
+        "Click 🔍 and enter keywords to find articles and content you may be looking for.",
+      close: "Close search",
       devNotice:
-        'Search is only available in production builds.',
+        "Search is only available in production builds.",
       devCommand:
-        'Run pnpm build && pnpm preview to test it locally.',
+        "Run pnpm build && pnpm preview to test it locally.",
     }
   : {
-      search: '搜索',
-      searchHint: '搜索文章...',
+      search: "搜索",
+      searchHint: "搜索文章...",
       searchCaption:
-        '点击 🔍 输入关键词，即可查找你需要的文章内容。',
-      close: '关闭搜索',
+        "点击 🔍 输入关键词，即可查找你需要的文章内容。",
+      close: "关闭搜索",
       devNotice:
-        '搜索功能仅在生产构建中可用。',
+        "搜索功能仅在生产构建中可用。",
       devCommand:
-        '运行 pnpm build && pnpm preview 来本地测试。',
+        "运行 pnpm build && pnpm preview 来本地测试。",
     };
 ---
 
@@ -34,7 +34,6 @@ const text = isEnglish
   <button
     class="search-button"
     data-open-modal
-    disabled
     type="button"
     aria-label={text.search}
   >
@@ -90,12 +89,14 @@ const text = isEnglish
 
       {
         import.meta.env.DEV ? (
-          <div class="dev-notice">
-            <p>
-              {text.devNotice}
-              <br />
-              {text.devCommand}
-            </p>
+          <div class="search-container">
+            <input
+              class="local-search-input"
+              data-local-search
+              type="search"
+              placeholder={text.searchHint}
+              aria-label={text.search}
+            />
           </div>
         ) : (
           <div class="search-container">
@@ -200,23 +201,17 @@ const text = isEnglish
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
-
     min-width: 0;
     box-sizing: border-box;
-
     background: var(--bg-main);
     border-radius: 12px;
     box-shadow:
       0 20px 60px rgba(0, 0, 0, 0.15);
-
     display: flex;
     flex-direction: column;
-
-    /* 防止内部内容把 dialog 撑宽 */
     overflow: hidden;
   }
 
@@ -259,15 +254,29 @@ const text = isEnglish
 
   .search-container {
     padding: 20px;
-
     flex: 1 1 auto;
-
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
-
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  .local-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font: inherit;
+    box-sizing: border-box;
+  }
+
+  .local-search-input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 3px rgba(44, 44, 44, 0.1);
   }
 
   /* =========================
@@ -287,16 +296,9 @@ const text = isEnglish
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
-
     overflow-x: hidden;
   }
 
-  /*
-   * 关键：
-   * Pagefind 内部有不少 flex 元素。
-   * 默认 min-width: auto 会让它们拒绝缩小，
-   * 从而导致横向 scrollbar。
-   */
   :global(#pagefind *),
   :global(#pagefind *::before),
   :global(#pagefind *::after) {
@@ -315,17 +317,12 @@ const text = isEnglish
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     font-family: var(--font-main);
     font-size: 1rem;
-
     padding: 12px 16px;
-
     border: 1px solid var(--accent-border);
     border-radius: 8px;
-
     background-color: var(--bg-main);
-
     box-sizing: border-box;
   }
 
@@ -340,11 +337,9 @@ const text = isEnglish
     display: flex;
     flex-direction: column;
     gap: 16px;
-
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     overflow-x: hidden;
   }
 
@@ -352,18 +347,13 @@ const text = isEnglish
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     padding: 12px;
-
     background-color: var(--bg-card);
     border: 1px solid var(--accent-border);
     border-radius: 8px;
-
     transition: box-shadow 0.2s ease;
-
     overflow-wrap: anywhere;
     word-break: break-word;
-
     box-sizing: border-box;
   }
 
@@ -376,7 +366,6 @@ const text = isEnglish
     font-weight: 700;
     margin-bottom: 4px;
     font-size: 1rem;
-
     max-width: 100%;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -386,7 +375,6 @@ const text = isEnglish
     font-size: 0.9rem;
     color: var(--text-muted);
     line-height: 1.5;
-
     max-width: 100%;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -396,114 +384,71 @@ const text = isEnglish
      Tags / Filters
      ========================= */
 
-  /*
-   * 强制整个 Filters 区域跟随搜索框宽度。
-   */
   :global(.pagefind-ui__filters) {
     display: block;
-
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     overflow-x: hidden !important;
     overflow-y: visible;
-
     box-sizing: border-box;
   }
 
-  /*
-   * 每一个 filter group 都允许缩小。
-   */
   :global(.pagefind-ui__filter-group) {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     overflow-x: hidden !important;
-
     box-sizing: border-box;
   }
 
-  /*
-   * Filter 本身不要撑宽。
-   */
   :global(.pagefind-ui__filter) {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     overflow-x: hidden !important;
     overflow-wrap: anywhere;
-
     box-sizing: border-box;
   }
 
-  /*
-   * 标签容器：
-   * 不再保持 nowrap，超长文字自动换行。
-   */
   :global(.pagefind-ui__filter-value) {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
-
     box-sizing: border-box;
-
     overflow-x: hidden;
   }
 
-  /*
-   * 标签内部元素同样允许缩小。
-   */
   :global(.pagefind-ui__filter-value-inner) {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
-
     box-sizing: border-box;
-
     overflow-x: hidden;
   }
 
-  /*
-   * 标签文字不要强制一行。
-   */
   :global(.pagefind-ui__filter-value-label) {
     max-width: 100%;
     min-width: 0;
-
     white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
-
     box-sizing: border-box;
   }
 
-  /*
-   * Pagefind filter 内部可能还有 flex 子元素。
-   * 这是解决“看起来明明有空间却出现横向滚动”的关键。
-   */
   :global(.pagefind-ui__filter-value > *),
   :global(.pagefind-ui__filter-value-inner > *) {
     min-width: 0 !important;
     max-width: 100% !important;
-
     box-sizing: border-box;
   }
 
-  /*
-   * 如果 Pagefind 给标签设置了固定宽度，
-   * 这里强制它重新适应父容器。
-   */
   :global(.pagefind-ui__filter-value[style]),
   :global(.pagefind-ui__filter-value-inner[style]) {
     max-width: 100% !important;
@@ -535,6 +480,7 @@ const text = isEnglish
     private dialog: HTMLDialogElement | null = null;
     private closeBtn: HTMLButtonElement | null = null;
     private openBtn: HTMLButtonElement | null = null;
+    private localSearchInput: HTMLInputElement | null = null;
 
     constructor() {
       super();
@@ -550,11 +496,15 @@ const text = isEnglish
 
       this.handleDialogClick =
         this.handleDialogClick.bind(this);
+
+      this.handleLocalSearch =
+        this.handleLocalSearch.bind(this);
     }
 
     private handleOpenModal = () => {
-      this.dialog?.showModal();
+      if (!this.dialog) return;
 
+      this.dialog.showModal();
       document.body.style.overflow = "hidden";
 
       window.addEventListener(
@@ -564,8 +514,9 @@ const text = isEnglish
     };
 
     private handleCloseModal = () => {
-      this.dialog?.close();
+      if (!this.dialog) return;
 
+      this.dialog.close();
       document.body.style.overflow = "";
 
       window.removeEventListener(
@@ -601,6 +552,20 @@ const text = isEnglish
       }
     };
 
+    private handleLocalSearch = (event: Event) => {
+      const input = event.currentTarget as HTMLInputElement;
+      const query = input.value.trim().toLocaleLowerCase();
+
+      document
+        .querySelectorAll<HTMLElement>('.article-card[data-content]')
+        .forEach((article) => {
+          const content =
+            article.dataset.content?.toLocaleLowerCase() || '';
+          article.style.display =
+            !query || content.includes(query) ? '' : 'none';
+        });
+    };
+
     connectedCallback() {
       this.dialog =
         this.querySelector(
@@ -633,6 +598,14 @@ const text = isEnglish
         );
       }
 
+      this.localSearchInput =
+        this.querySelector('[data-local-search]');
+
+      this.localSearchInput?.addEventListener(
+        'input',
+        this.handleLocalSearch
+      );
+
       window.addEventListener(
         "keydown",
         this.handleWindowKeydown
@@ -647,6 +620,9 @@ const text = isEnglish
     }
 
     private async loadPagefindUI() {
+      const isEnglishPage =
+        document.documentElement.lang === "en";
+
       const onIdle =
         window.requestIdleCallback ||
         ((cb: FrameRequestCallback) =>
@@ -660,6 +636,10 @@ const text = isEnglish
           new PagefindUI({
             baseUrl: import.meta.env.BASE_URL,
 
+            /*
+             * 去掉 BASE_URL 末尾的 /，
+             * 再拼接 /pagefind/。
+             */
             bundlePath:
               import.meta.env.BASE_URL.replace(
                 /\/$/,
@@ -670,9 +650,10 @@ const text = isEnglish
             showImages: false,
 
             /*
-             * Pagefind 自己生成的文字也根据当前语言切换。
+             * Pagefind 自己生成的文字
+             * 根据当前语言切换。
              */
-            translations: isEnglish
+            translations: isEnglishPage
               ? {
                   placeholder: "Search...",
 
@@ -800,6 +781,11 @@ const text = isEnglish
       window.removeEventListener(
         "click",
         this.handleDialogClick
+      );
+
+      this.localSearchInput?.removeEventListener(
+        'input',
+        this.handleLocalSearch
       );
     }
   }

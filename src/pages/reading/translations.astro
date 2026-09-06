@@ -84,7 +84,12 @@ const allTags = Array.from(
                   {article.tags && article.tags.length > 0 && (
                     <div class="tags-inline">
                       {article.tags.map((tag: string) => (
-                        <span class="tag-badge">#{tag}</span>
+                        <a
+                          href={`/tags/${encodeURIComponent(tag)}`}
+                          class="tag-badge"
+                        >
+                          #{tag}
+                        </a>
                       ))}
                     </div>
                   )}
@@ -428,3 +433,37 @@ const allTags = Array.from(
     }
   }
 </style>
+
+<script>
+  const articlesList = document.getElementById('articles-list');
+  const tagLinks =
+    document.querySelectorAll('.tag-link') as NodeListOf<HTMLAnchorElement>;
+
+  let currentTag = 'all';
+
+  function filterArticles() {
+    if (!articlesList) return;
+
+    articlesList.querySelectorAll('.article-card').forEach((article) => {
+      const tags = (article.getAttribute('data-tags') || '')
+        .split(',')
+        .filter((tag) => tag);
+      const tagMatch = currentTag === 'all' || tags.includes(currentTag);
+
+      (article as HTMLElement).style.display = tagMatch ? 'block' : 'none';
+    });
+  }
+
+  tagLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      tagLinks.forEach((item) => item.classList.remove('active'));
+      link.classList.add('active');
+      currentTag = link.getAttribute('data-tag') || 'all';
+      filterArticles();
+    });
+  });
+
+  filterArticles();
+</script>
