@@ -201,6 +201,59 @@ const languageSwitchPath = isEnglish
     color: var(--bg-card);
     border-color: var(--text-primary);
   }
+
+  /* ==========================================
+     移动端优化 ( Mobile Layout Optimization )
+     ========================================== */
+  @media (max-width: 768px) {
+    nav {
+      padding: 10px 0;
+    }
+
+    nav .page-width {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    /* 1. 链接区：改为单行横向平滑滚动，防止挤压折行 */
+    .nav-links {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .nav-links::-webkit-scrollbar {
+      display: none; /* Chrome / Safari */
+    }
+
+    /* 2. 操作区：使用弹性网格，自动按按钮数量均分整行 */
+    .nav-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      gap: 6px;
+      width: 100%;
+    }
+
+    .language-switch,
+    .font-toggle-btn,
+    .bionic-toggle-btn,
+    .theme-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6px 4px;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
 </style>
 
 <script>
