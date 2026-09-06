@@ -110,36 +110,37 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
           aria-label="Soft pink reading ruler"
         ></button>
       </div>
+
       <div class="ruler-sizes" id="ruler-sizes">
-  <span class="a11y-label">Ruler size</span>
+        <span class="a11y-label">Ruler size</span>
 
-  <button
-    type="button"
-    class="ruler-size"
-    data-ruler-size="24"
-    aria-label="Thin reading ruler"
-  >
-    Thin
-  </button>
+        <button
+          type="button"
+          class="ruler-size"
+          data-ruler-size="32"
+          aria-label="Thin reading ruler"
+        >
+          Thin
+        </button>
 
-  <button
-    type="button"
-    class="ruler-size"
-    data-ruler-size="36"
-    aria-label="Medium reading ruler"
-  >
-    Medium
-  </button>
+        <button
+          type="button"
+          class="ruler-size"
+          data-ruler-size="60"
+          aria-label="Medium reading ruler"
+        >
+          Medium
+        </button>
 
-  <button
-    type="button"
-    class="ruler-size"
-    data-ruler-size="56"
-    aria-label="Thick reading ruler"
-  >
-    Thick
-  </button>
-</div>
+        <button
+          type="button"
+          class="ruler-size"
+          data-ruler-size="96"
+          aria-label="Thick reading ruler"
+        >
+          Thick
+        </button>
+      </div>
     </div>
 
     <article class="article-content">
@@ -289,6 +290,17 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
     border-color: var(--text-primary);
   }
 
+  .ruler-sizes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ruler-size {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+  }
+
   .reading-ruler {
     position: fixed;
     left: 0;
@@ -299,6 +311,7 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     pointer-events: none;
     z-index: 500;
+    transition: height 0.2s ease, background-color 0.2s ease;
   }
 
   .reading-ruler[hidden] {
@@ -543,6 +556,7 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
   const fontIncreaseBtn = document.querySelector('[data-font-increase]') as HTMLButtonElement | null;
   const rulerToggleBtn = document.querySelector('[data-toggle-ruler]') as HTMLButtonElement | null;
   const rulerSwatches = document.querySelectorAll('.ruler-swatch') as NodeListOf<HTMLButtonElement>;
+  const rulerSizeButtons = document.querySelectorAll('.ruler-size') as NodeListOf<HTMLButtonElement>;
 
   const fontScales = [0.85, 1, 1.15, 1.3, 1.5];
   let scaleIndex = 1;
@@ -581,11 +595,11 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
 
   // Reading ruler
   function handleRulerMove(e: MouseEvent) {
-  if (!ruler) return;
+    if (!ruler) return;
 
-  const rulerHeight = ruler.offsetHeight;
-  ruler.style.top = `${e.clientY - rulerHeight / 2}px`;
-}
+    const rulerHeight = ruler.offsetHeight;
+    ruler.style.top = `${e.clientY - rulerHeight / 2}px`;
+  }
 
   function setRulerEnabled(enabled: boolean) {
     if (!ruler || !rulerToggleBtn) return;
@@ -639,4 +653,34 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
   if (savedRulerColor) {
     setRulerColor(savedRulerColor);
   }
+
+  // Reading ruler size
+  function setRulerSize(size: string) {
+    if (!ruler) return;
+
+    ruler.style.height = `${size}px`;
+
+    rulerSizeButtons.forEach((button) => {
+      button.setAttribute(
+        'aria-pressed',
+        String(button.dataset.rulerSize === size)
+      );
+    });
+
+    localStorage.setItem('nw-ruler-size', size);
+  }
+
+  rulerSizeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const size = button.dataset.rulerSize;
+      if (size) setRulerSize(size);
+    });
+  });
+
+  const savedRulerSize =
+    localStorage.getItem('nw-ruler-size') ||
+    rulerSizeButtons[1]?.dataset.rulerSize ||
+    '36';
+
+  setRulerSize(savedRulerSize);
 </script>

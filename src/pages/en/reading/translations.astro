@@ -58,7 +58,6 @@ const allTags = Array.from(
   <main class="translations-container">
     <!-- Main content area -->
     <div class="content-area">
-      <!-- Article list -->
       <div class="articles-list" id="articles-list">
         {articles.length > 0 ? (
           articles.map((article: any) => {
@@ -161,28 +160,63 @@ const allTags = Array.from(
 </BaseLayout>
 
 <style>
+  /* =========================
+     Main layout
+     ========================= */
+
   .translations-container {
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     gap: 32px;
+
+    width: 100%;
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 16px;
+
+    box-sizing: border-box;
+    min-width: 0;
+
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
   }
 
   .content-area {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
+    max-width: 100%;
+
+    box-sizing: border-box;
   }
+
+  /* =========================
+     Search
+     ========================= */
 
   .search-section {
     position: relative;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
   }
+
+  /* =========================
+     Article list
+     ========================= */
 
   .articles-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .no-articles {
@@ -192,11 +226,21 @@ const allTags = Array.from(
   }
 
   .article-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
     border-radius: 12px;
     border: 1px solid var(--accent-border);
     overflow: hidden;
+
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .article-card:hover {
@@ -207,14 +251,22 @@ const allTags = Array.from(
   .card-header {
     background-color: var(--card-header-bg, #F0E2B4);
     padding: 14px 18px;
+
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   .card-header h3 {
     margin: 0 0 4px 0;
+
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 0.02em;
+
     color: var(--text-primary);
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .meta {
@@ -226,42 +278,85 @@ const allTags = Array.from(
   .card-body {
     background-color: var(--bg-card);
     padding: 20px;
+
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   .excerpt {
     margin: 0 0 12px 0;
+
     color: var(--text-muted);
     line-height: 1.6;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
+
+  /* =========================
+     Article tags
+     ========================= */
 
   .tags-inline {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+
     margin-bottom: 12px;
+
+    min-width: 0;
+    max-width: 100%;
+
+    box-sizing: border-box;
   }
 
   .tag-badge {
     display: inline-block;
+
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
     background-color: rgba(0, 0, 0, 0.05);
     padding: 4px 10px;
     border-radius: 6px;
+
     font-size: 0.8rem;
     color: var(--text-muted);
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
+
+  /* =========================
+     Read links
+     ========================= */
 
   .read-links {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+
+    min-width: 0;
+    max-width: 100%;
   }
 
   .read-more {
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
-    transition: transform 0.2s ease, color 0.2s ease;
+
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
+
     display: inline-block;
+
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .read-more:hover {
@@ -274,30 +369,75 @@ const allTags = Array.from(
     font-weight: 500;
   }
 
+  /* =========================
+     Sidebar
+     ========================= */
+
   .sidebar {
-    width: 220px;
-    flex-shrink: 0;
+    /*
+     * Slightly wider than before so English tags
+     * have more room.
+     */
+    flex: 0 0 260px;
+
+    width: 260px;
+    max-width: 260px;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    /*
+     * Height is determined naturally by its content.
+     */
+    height: auto;
+
+    /*
+     * Never create a horizontal scrollbar.
+     */
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
-  .search-section {
-    margin-bottom: 16px;
-  }
+  /* =========================
+     Tag filter
+     ========================= */
 
   .tag-filter {
     background-color: var(--bg-card);
+
     padding: 20px;
+
     border-radius: 12px;
     border: 1px solid var(--accent-border);
+
     position: sticky;
     top: 20px;
-    aspect-ratio: 1 / 1;
-    overflow-y: auto;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    /*
+     * No fixed aspect ratio.
+     * The box grows naturally with the tags.
+     */
+    height: auto;
+
+    /*
+     * No internal scrolling.
+     */
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .tag-filter h3 {
     margin: 0 0 10px 0;
+
     font-size: 0.85rem;
     font-weight: 700;
+
     color: var(--text-muted);
   }
 
@@ -305,13 +445,35 @@ const allTags = Array.from(
     display: flex;
     flex-wrap: wrap;
     gap: 6px 10px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
   }
 
   .tag-link {
     color: var(--text-primary);
     text-decoration: none;
+
     font-size: 0.85rem;
-    white-space: nowrap;
+
+    /*
+     * Long English tags can wrap inside the sidebar.
+     */
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
     transition: color 0.2s ease;
   }
 
@@ -324,18 +486,31 @@ const allTags = Array.from(
     text-decoration: underline;
   }
 
+  /* =========================
+     Responsive layout
+     ========================= */
+
   @media (max-width: 768px) {
     .translations-container {
       flex-direction: column;
+      gap: 24px;
+    }
+
+    .content-area {
+      width: 100%;
+      max-width: 100%;
     }
 
     .sidebar {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
+
+      flex: none;
     }
 
     .tag-filter {
       position: static;
-      aspect-ratio: auto;
     }
   }
 </style>
@@ -343,6 +518,7 @@ const allTags = Array.from(
 <script>
   // Search is handled by Pagefind; this handles local tag filtering.
   const articlesList = document.getElementById('articles-list');
+
   const tagLinks =
     document.querySelectorAll('.tag-link') as NodeListOf<HTMLAnchorElement>;
 
@@ -375,6 +551,7 @@ const allTags = Array.from(
       link.classList.add('active');
 
       currentTag = link.getAttribute('data-tag') || 'all';
+
       filterArticles();
     });
   });

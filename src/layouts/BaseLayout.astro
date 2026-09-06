@@ -8,7 +8,6 @@ interface Props {
 
 const { title = "Neuroweave" } = Astro.props;
 
-// 根据 URL 判断当前语言
 const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
 ---
 
@@ -19,25 +18,37 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
-    <!-- 基础 Favicon 引入 -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/neuroweavelogo.png" />
     <link rel="shortcut icon" href="/neuroweavelogo.png" />
     <link rel="apple-touch-icon" href="/neuroweavelogo.png" />
 
-    <!-- 引入思源宋体 (Noto Serif SC) -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- 尽早应用护眼模式与字体模式，避免页面加载闪烁 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+
+    <!-- 尽早应用保存的模式 -->
     <script is:inline>
       (function () {
         try {
           if (localStorage.getItem('nw-sensory-theme') === 'true') {
             document.documentElement.classList.add('sensory-theme');
           }
+
           if (localStorage.getItem('nw-sans-serif-theme') === 'true') {
             document.documentElement.classList.add('sans-serif-theme');
+          }
+
+          if (
+            document.documentElement.lang === 'en' &&
+            localStorage.getItem('nw-bionic-theme') === 'true'
+          ) {
+            document.documentElement.classList.add('bionic-theme');
           }
         } catch (e) {}
       })();
@@ -45,52 +56,383 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
   </head>
 
   <body>
-    <!-- 1. 全局导航 -->
     <Nav />
 
-    <!-- 2. 页面主体插槽（具体的 Header 和 Main 会插在这里） -->
     <slot />
 
-    <!-- 3. 全局页脚 -->
     <Footer />
+
+    <!-- Bionic Reading -->
+    <script>
+      const BIONIC_CLASS = 'bionic-text';
+
+      /*
+       * 保存 <main> 最初的 HTML。
+       *
+       * 每次重新切换 Bionic Reading 时，
+       * 都从这个最初状态重新生成。
+       */
+      let originalMainHTML = null;
+
+      function isEnglishPage() {
+        return document.documentElement.lang === 'en';
+      }
+
+      /*
+       * 保存 main 的原始内容。
+       *
+       * 只保存一次。
+       */
+      function saveOriginalMain() {
+        const main = document.querySelector('main');
+
+        if (!main) {
+          return;
+        }
+
+        if (originalMainHTML === null) {
+          originalMainHTML = main.innerHTML;
+        }
+      }
+
+      /*
+       * 将 main 完整恢复成最初状态。
+       *
+       * 不使用 document.body.innerHTML，
+       * 避免破坏 Nav / Footer 以及它们的事件监听。
+       */
+      function restoreOriginalMain() {
+        const main = document.querySelector('main');
+
+        if (!main || originalMainHTML === null) {
+          return;
+        }
+
+        main.innerHTML = originalMainHTML;
+      }
+
+      /*
+       * 决定一个英文单词有多少比例需要加粗。
+       *
+       * 固定为前 40%。
+       * 至少 1 个字符。
+       * 不会让整个单词都变粗。
+       */
+      function getBionicPart(word) {
+        if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]+$/.test(word)) {
+          return '';
+        }
+
+        // 单字符单词不处理
+        if (word.length <= 1) {
+          return '';
+        }
+
+        const count = Math.max(
+          1,
+          Math.round(word.length * 0.4)
+        );
+
+        // 防止整个单词都被加粗
+        if (count >= word.length) {
+          return word.slice(0, word.length - 1);
+        }
+
+        return word.slice(0, count);
+      }
+
+      /*
+       * 创建一个 Bionic Reading 单词。
+       *
+       * 例如：
+       *
+       * knowledge
+       * ↓
+       * know + ledge
+       */
+      function createBionicWord(word) {
+        const boldPart = getBionicPart(word);
+
+        if (!boldPart) {
+          return document.createTextNode(word);
+        }
+
+        const fragment =
+          document.createDocumentFragment();
+
+        const strong =
+          document.createElement('strong');
+
+        strong.className = BIONIC_CLASS;
+        strong.textContent = boldPart;
+
+        fragment.appendChild(strong);
+
+        fragment.appendChild(
+          document.createTextNode(
+            word.slice(boldPart.length)
+          )
+        );
+
+        return fragment;
+      }
+
+      /*
+       * 处理一个普通文字节点。
+       */
+      function processTextNode(textNode) {
+        const text = textNode.textContent;
+
+        if (!text || !text.trim()) {
+          return;
+        }
+
+        /*
+         * 匹配：
+         *
+         * accessibility
+         * neurodivergent
+         * don't
+         * we're
+         * user's
+         *
+         * apostrophe 会保留。
+         */
+        const parts = text.split(
+          /([A-Za-zÀ-ÖØ-öø-ÿ]+(?:['’][A-Za-zÀ-ÖØ-öø-ÿ]+)*)/g
+        );
+
+        const fragment =
+          document.createDocumentFragment();
+
+        parts.forEach((part) => {
+          /*
+           * 普通英文单词或 contraction
+           */
+          if (
+            /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['’][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/.test(
+              part
+            )
+          ) {
+            /*
+             * 如果是 contraction：
+             *
+             * don't
+             * ↓
+             * don + 't
+             *
+             * 只对 apostrophe 前面的部分应用 Bionic。
+             */
+            const match = part.match(
+              /^([A-Za-zÀ-ÖØ-öø-ÿ]+)(['’].*)$/
+            );
+
+            if (match) {
+              fragment.appendChild(
+                createBionicWord(match[1])
+              );
+
+              fragment.appendChild(
+                document.createTextNode(match[2])
+              );
+            } else {
+              fragment.appendChild(
+                createBionicWord(part)
+              );
+            }
+          } else {
+            /*
+             * 标点、空格、中文等保持原样。
+             */
+            fragment.appendChild(
+              document.createTextNode(part)
+            );
+          }
+        });
+
+        textNode.parentNode?.replaceChild(
+          fragment,
+          textNode
+        );
+      }
+
+      /*
+       * 应用 Bionic Reading。
+       *
+       * 只遍历 <main>。
+       *
+       * 因此：
+       * - Nav 不处理
+       * - Footer 不处理
+       * - button 不处理
+       * - code 不处理
+       * - pre 不处理
+       * - 原本的 strong / b 不处理
+       */
+      function applyBionicReading() {
+        if (!isEnglishPage()) {
+          return;
+        }
+
+        const main = document.querySelector('main');
+
+        if (!main) {
+          return;
+        }
+
+        /*
+         * 遍历 main 内的文字节点。
+         */
+        const walker = document.createTreeWalker(
+          main,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              const parent = node.parentElement;
+
+              if (!parent) {
+                return NodeFilter.FILTER_REJECT;
+              }
+
+              /*
+               * 排除不应该被 Bionic 处理的元素。
+               */
+              if (
+                parent.closest(
+                  'script, style, code, pre, textarea, input, select, button, strong, b, .bionic-text'
+                )
+              ) {
+                return NodeFilter.FILTER_REJECT;
+              }
+
+              /*
+               * 空白文字节点跳过。
+               */
+              if (!node.textContent?.trim()) {
+                return NodeFilter.FILTER_REJECT;
+              }
+
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          }
+        );
+
+        /*
+         * 先收集 text nodes。
+         *
+         * 不在 TreeWalker 遍历过程中直接修改 DOM。
+         */
+        const textNodes = [];
+
+        let node;
+
+        while ((node = walker.nextNode())) {
+          textNodes.push(node);
+        }
+
+        /*
+         * 再统一处理。
+         */
+        textNodes.forEach(processTextNode);
+      }
+
+      /*
+       * 统一刷新 Bionic Reading。
+       *
+       * 每次都严格执行：
+       *
+       * 1. 确认英文页面
+       * 2. 保存最初的 main
+       * 3. 恢复 main 到最初状态
+       * 4. 如果关闭 → 停止
+       * 5. 如果开启 → 从干净 DOM 重新生成
+       */
+      function updateBionicReading() {
+        /*
+         * 中文页面永远不处理。
+         */
+        if (!isEnglishPage()) {
+          return;
+        }
+
+        /*
+         * 第一次执行时保存原始 main。
+         */
+        saveOriginalMain();
+
+        /*
+         * 无论当前是什么状态，
+         * 先恢复到完全干净的原始状态。
+         */
+        restoreOriginalMain();
+
+        /*
+         * 如果 Bionic 当前没有开启，
+         * 保持普通文字即可。
+         */
+        if (
+          !document.documentElement.classList.contains(
+            'bionic-theme'
+          )
+        ) {
+          return;
+        }
+
+        /*
+         * 从原始 DOM 重新生成一次。
+         */
+        applyBionicReading();
+      }
+
+      /*
+       * Nav 点击 Bionic Reading 按钮后，
+       * 会发送这个事件。
+       */
+      window.addEventListener(
+        'nw-update-bionic',
+        updateBionicReading
+      );
+
+      /*
+       * 页面第一次加载时执行一次。
+       */
+      updateBionicReading();
+    </script>
   </body>
 </html>
 
-<!-- is:global 确保全局字体、变量和基础样式对整个网站生效 -->
 <style is:global>
-:root {
-  --bg-main: #F8F4E6;       /* 柔和暖米黄背景 */
-  --bg-nav: #F2EDD8;        /* 导航栏底色 */
-  
-  /* -------------------------------------------------------------
-     卡片底色微调：
-     原先：#FFF9E8 (偏白、亮)
-     现改为：#F5EBCF (淡雅、明确有黄色调，像温润的黄奶油/麦秆纸)
-  ------------------------------------------------------------- */
-  --bg-card: #F5EBCF;
+  :root {
+    --bg-main: #F8F4E6;
+    --bg-nav: #F2EDD8;
+    --bg-card: #F5EBCF;
+    --card-header-bg: #EADCB8;
 
-  /* 卡片页眉底色：同步微调加深，保持轻微的层级区分 */
-  --card-header-bg: #EADCB8;
+    --text-primary: #2C2C2C;
+    --text-muted: #6B6A65;
+    --accent-border: rgba(70, 65, 50, 0.08);
 
-  --text-primary: #2C2C2C;
-  --text-muted: #6B6A65;
-  --accent-border: rgba(70, 65, 50, 0.08);
+    /* Serif：中文霞鹜文楷 + 英文 Georgia */
+    --font-serif:
+      "LXGW WenKai",
+      "霞鹜文楷",
+      Georgia,
+      serif;
 
-  /* 思源宋体优先（Noto Serif SC 即 Google Fonts 版思源宋体） */
-  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", "STSong", "SimSun", Georgia, serif;
-  /* 无衬线字体组合（黑体） */
-  --font-sans: "Hiragino Sans GB", "冬青黑体", "Microsoft YaHei", "微软雅黑", -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Sans-serif：中文更纱黑体 + 英文 Lexend */
+    --font-sans:
+      "Lexend",
+      "Sarasa Gothic SC",
+      "更纱黑体 SC",
+      sans-serif;
 
-  /* 默认全站字体设定为衬线体 */
-  --font-main: var(--font-serif);
-}
+    --font-main: var(--font-serif);
+  }
 
-  /* 点击导航栏“无衬线”按钮后激活，全站切换为无衬线字体（黑体） */
   :root.sans-serif-theme {
     --font-main: var(--font-sans);
   }
 
-  /* 暗色系模式：低对比度、感官友好的暗色配色，作用于全站 */
   :root.sensory-theme {
     --bg-main: #161B24;
     --bg-nav: #1E2430;
@@ -102,17 +444,29 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
     --card-header-bg: #171B24;
   }
 
+  .bionic-text {
+    font-weight: 600;
+  }
+
+  main strong {
+    font-weight: 600;
+  }
+
   body {
     margin: 0;
     padding: 0;
     font-family: var(--font-main);
-    font-size: 1.05rem; /* 全局字号稍微放大 */
+    font-size: 1.05rem;
     color: var(--text-primary);
     background-color: var(--bg-main);
     line-height: 1.8;
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.25s ease, color 0.25s ease;
+
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
 
   main {

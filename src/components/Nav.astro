@@ -1,5 +1,6 @@
 ---
-const isEnglish = Astro.url.pathname.startsWith('/en');
+const currentPath = Astro.url.pathname;
+const isEnglish = currentPath.startsWith('/en');
 
 const navItems = isEnglish
   ? [
@@ -20,6 +21,36 @@ const navItems = isEnglish
       { href: '/keywords', label: '关键词整理' },
       { href: '/feedback', label: '反馈' },
     ];
+
+/*
+ * Language switch
+ *
+ * 中文页面：
+ * /about
+ * → /en/about
+ *
+ * 英文页面：
+ * /en/about
+ * → /about
+ *
+ * 首页特殊处理：
+ * /
+ * → /en/
+ *
+ * /en/
+ * → /
+ */
+const languageSwitchPath = isEnglish
+  ? (
+      currentPath === '/en' || currentPath === '/en/'
+        ? '/'
+        : currentPath.replace(/^\/en/, '')
+    )
+  : (
+      currentPath === '/'
+        ? '/en/'
+        : `/en${currentPath}`
+    );
 ---
 
 <nav>
@@ -34,15 +65,16 @@ const navItems = isEnglish
     </div>
 
     <div class="nav-actions">
+      <!-- Language -->
       <a
         class="language-switch"
-        href={isEnglish ? '/' : '/en/'}
+        href={languageSwitchPath}
         aria-label={isEnglish ? '切换到中文' : 'Switch to English'}
       >
         {isEnglish ? '中文' : 'English'}
       </a>
 
-      <!-- 无衬线字体切换按钮 -->
+      <!-- Font -->
       <button
         type="button"
         class="font-toggle-btn"
@@ -52,6 +84,19 @@ const navItems = isEnglish
         {isEnglish ? 'Sans-serif' : '无衬线'}
       </button>
 
+      <!-- Bionic Reading：只有英文显示 -->
+      {isEnglish && (
+        <button
+          type="button"
+          class="bionic-toggle-btn"
+          id="bionic-toggle-btn"
+          aria-pressed="false"
+        >
+          Bionic Reading
+        </button>
+      )}
+
+      <!-- Sensory Mode -->
       <button
         type="button"
         class="theme-toggle-btn"
@@ -66,9 +111,17 @@ const navItems = isEnglish
 
 <style>
   nav {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    isolation: isolate;
+
     background-color: var(--bg-nav);
     padding: 16px 0;
     font-size: 0.95rem;
+
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--accent-border);
   }
 
   nav .page-width {
@@ -119,8 +172,9 @@ const navItems = isEnglish
     border-radius: 6px;
   }
 
-  /* 复用控制按钮样式 */
+  /* 控制按钮 */
   .font-toggle-btn,
+  .bionic-toggle-btn,
   .theme-toggle-btn {
     background-color: transparent;
     border: 1px solid var(--accent-border);
@@ -135,11 +189,13 @@ const navItems = isEnglish
   }
 
   .font-toggle-btn:hover,
+  .bionic-toggle-btn:hover,
   .theme-toggle-btn:hover {
     border-color: var(--text-primary);
   }
 
   .font-toggle-btn[aria-pressed="true"],
+  .bionic-toggle-btn[aria-pressed="true"],
   .theme-toggle-btn[aria-pressed="true"] {
     background-color: var(--text-primary);
     color: var(--bg-card);
@@ -150,38 +206,114 @@ const navItems = isEnglish
 <script>
   const themeBtn = document.getElementById('theme-toggle-btn');
   const fontBtn = document.getElementById('font-toggle-btn');
+  const bionicBtn = document.getElementById('bionic-toggle-btn');
 
   function syncButtonState() {
     themeBtn?.setAttribute(
       'aria-pressed',
-      String(document.documentElement.classList.contains('sensory-theme'))
+      String(
+        document.documentElement.classList.contains(
+          'sensory-theme'
+        )
+      )
     );
-    // 如果给 <html> 挂了 sans-serif-theme 类名，说明启用了无衬线
+
     fontBtn?.setAttribute(
       'aria-pressed',
-      String(document.documentElement.classList.contains('sans-serif-theme'))
+      String(
+        document.documentElement.classList.contains(
+          'sans-serif-theme'
+        )
+      )
     );
+
+    if (bionicBtn) {
+      bionicBtn.setAttribute(
+        'aria-pressed',
+        String(
+          document.documentElement.classList.contains(
+            'bionic-theme'
+          )
+        )
+      );
+    }
   }
 
   syncButtonState();
 
-  // 暗色模式切换
+
+  // =========================
+  // Sensory Mode
+  // =========================
+
   themeBtn?.addEventListener('click', () => {
     const enabled =
-      !document.documentElement.classList.contains('sensory-theme');
+      !document.documentElement.classList.contains(
+        'sensory-theme'
+      );
 
-    document.documentElement.classList.toggle('sensory-theme', enabled);
-    localStorage.setItem('nw-sensory-theme', String(enabled));
+    document.documentElement.classList.toggle(
+      'sensory-theme',
+      enabled
+    );
+
+    localStorage.setItem(
+      'nw-sensory-theme',
+      String(enabled)
+    );
+
     syncButtonState();
   });
 
-  // 字体切换（默认是衬线，点击激活 sans-serif-theme）
+
+  // =========================
+  // Font
+  // =========================
+
   fontBtn?.addEventListener('click', () => {
     const enabled =
-      !document.documentElement.classList.contains('sans-serif-theme');
+      !document.documentElement.classList.contains(
+        'sans-serif-theme'
+      );
 
-    document.documentElement.classList.toggle('sans-serif-theme', enabled);
-    localStorage.setItem('nw-sans-serif-theme', String(enabled));
+    document.documentElement.classList.toggle(
+      'sans-serif-theme',
+      enabled
+    );
+
+    localStorage.setItem(
+      'nw-sans-serif-theme',
+      String(enabled)
+    );
+
     syncButtonState();
+  });
+
+
+  // =========================
+  // Bionic Reading
+  // =========================
+
+  bionicBtn?.addEventListener('click', () => {
+    const enabled =
+      !document.documentElement.classList.contains(
+        'bionic-theme'
+      );
+
+    document.documentElement.classList.toggle(
+      'bionic-theme',
+      enabled
+    );
+
+    localStorage.setItem(
+      'nw-bionic-theme',
+      String(enabled)
+    );
+
+    syncButtonState();
+
+    window.dispatchEvent(
+      new CustomEvent('nw-update-bionic')
+    );
   });
 </script>

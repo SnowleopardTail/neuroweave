@@ -1,10 +1,33 @@
 ---
-// 现代化搜索组件 - 支持 Pagefind 全文搜索
-// 基于 Astro Cactus 主题改进（MIT License）
-// https://github.com/zouzonghao/Astro-theme-Cactus-zh_CN
-
 import "@pagefind/default-ui/css/ui.css";
+
 export const prerender = true;
+
+const isEnglish = Astro.url.pathname.startsWith('/en');
+
+const text = isEnglish
+  ? {
+      search: 'Search',
+      searchHint: 'Search articles...',
+      searchCaption:
+        'Click 🔍 and enter keywords to find articles and content you may be looking for.',
+      close: 'Close search',
+      devNotice:
+        'Search is only available in production builds.',
+      devCommand:
+        'Run pnpm build && pnpm preview to test it locally.',
+    }
+  : {
+      search: '搜索',
+      searchHint: '搜索文章...',
+      searchCaption:
+        '点击 🔍 输入关键词，即可查找你需要的文章内容。',
+      close: '关闭搜索',
+      devNotice:
+        '搜索功能仅在生产构建中可用。',
+      devCommand:
+        '运行 pnpm build && pnpm preview 来本地测试。',
+    };
 ---
 
 <site-search class="search-wrapper" id="search">
@@ -12,7 +35,8 @@ export const prerender = true;
     class="search-button"
     data-open-modal
     disabled
-    aria-label="搜索"
+    type="button"
+    aria-label={text.search}
   >
     <svg
       aria-hidden="true"
@@ -30,10 +54,15 @@ export const prerender = true;
       <circle cx="11" cy="11" r="8"></circle>
       <path d="m21 21-4.35-4.35"></path>
     </svg>
-    <span class="search-hint">搜索文章...</span>
+
+    <span class="search-hint">
+      {text.searchHint}
+    </span>
   </button>
 
-  <p class="search-caption">点击 🔍 输入关键词，即可查找是否有你需要的文章内容</p>
+  <p class="search-caption">
+    {text.searchCaption}
+  </p>
 
   <dialog class="search-dialog" data-dialog>
     <div class="dialog-frame">
@@ -41,7 +70,7 @@ export const prerender = true;
         class="close-button"
         data-close-modal
         type="button"
-        aria-label="关闭搜索"
+        aria-label={text.close}
       >
         <svg
           aria-hidden="true"
@@ -63,14 +92,14 @@ export const prerender = true;
         import.meta.env.DEV ? (
           <div class="dev-notice">
             <p>
-              搜索功能仅在生产构建中可用。
+              {text.devNotice}
               <br />
-              运行 <code>pnpm build && pnpm preview</code> 来本地测试。
+              {text.devCommand}
             </p>
           </div>
         ) : (
           <div class="search-container">
-            <div id="pagefind" />
+            <div id="pagefind"></div>
           </div>
         )
       }
@@ -81,6 +110,8 @@ export const prerender = true;
 <style>
   .search-wrapper {
     position: relative;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .search-button {
@@ -94,9 +125,13 @@ export const prerender = true;
     border-radius: 8px;
     cursor: pointer;
     color: var(--text-primary);
-    font-family: var(--font-serif);
+    font-family: var(--font-main);
     font-size: 0.9rem;
-    transition: all 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+    box-sizing: border-box;
+    max-width: 100%;
   }
 
   .search-button:hover:not(:disabled) {
@@ -137,16 +172,23 @@ export const prerender = true;
     }
   }
 
+  /* =========================
+     Search dialog
+     ========================= */
+
   .search-dialog {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     z-index: 999;
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     display: none;
+    box-sizing: border-box;
   }
 
   .search-dialog[open] {
@@ -158,14 +200,23 @@ export const prerender = true;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
+
+    min-width: 0;
+    box-sizing: border-box;
+
     background: var(--bg-main);
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.15);
+
     display: flex;
     flex-direction: column;
+
+    /* 防止内部内容把 dialog 撑宽 */
     overflow: hidden;
   }
 
@@ -208,11 +259,21 @@ export const prerender = true;
 
   .search-container {
     padding: 20px;
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+
     overflow-y: auto;
-    flex: 1;
+    overflow-x: hidden;
   }
 
-  /* Pagefind UI 自定义样式 */
+  /* =========================
+     Pagefind UI
+     ========================= */
+
   :global(#pagefind) {
     --pagefind-ui-primary: var(--text-primary);
     --pagefind-ui-text: var(--text-primary);
@@ -220,56 +281,252 @@ export const prerender = true;
     --pagefind-ui-border: var(--accent-border);
     --pagefind-ui-border-width: 1px;
     --pagefind-ui-border-radius: 8px;
-    --pagefind-ui-font: var(--font-serif);
+    --pagefind-ui-font: var(--font-main);
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+  }
+
+  /*
+   * 关键：
+   * Pagefind 内部有不少 flex 元素。
+   * 默认 min-width: auto 会让它们拒绝缩小，
+   * 从而导致横向 scrollbar。
+   */
+  :global(#pagefind *),
+  :global(#pagefind *::before),
+  :global(#pagefind *::after) {
+    box-sizing: border-box;
+    max-width: 100%;
   }
 
   :global(.pagefind-ui__form) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin-bottom: 16px;
   }
 
   :global(.pagefind-ui__input) {
-    font-family: var(--font-serif);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    font-family: var(--font-main);
     font-size: 1rem;
+
     padding: 12px 16px;
+
     border: 1px solid var(--accent-border);
     border-radius: 8px;
-    background-color: #FFFFFF;
+
+    background-color: var(--bg-main);
+
+    box-sizing: border-box;
   }
 
   :global(.pagefind-ui__input:focus) {
     outline: none;
     border-color: var(--text-primary);
-    box-shadow: 0 0 0 3px rgba(44, 44, 44, 0.1);
+    box-shadow:
+      0 0 0 3px rgba(44, 44, 44, 0.1);
   }
 
   :global(.pagefind-ui__results) {
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow-x: hidden;
   }
 
   :global(.pagefind-ui__result) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     padding: 12px;
+
     background-color: var(--bg-card);
     border: 1px solid var(--accent-border);
     border-radius: 8px;
-    transition: all 0.2s ease;
+
+    transition: box-shadow 0.2s ease;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    box-sizing: border-box;
   }
 
   :global(.pagefind-ui__result:hover) {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   :global(.pagefind-ui__result-title) {
     font-weight: 700;
     margin-bottom: 4px;
     font-size: 1rem;
+
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   :global(.pagefind-ui__result-excerpt) {
     font-size: 0.9rem;
     color: var(--text-muted);
     line-height: 1.5;
+
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* =========================
+     Tags / Filters
+     ========================= */
+
+  /*
+   * 强制整个 Filters 区域跟随搜索框宽度。
+   */
+  :global(.pagefind-ui__filters) {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow-x: hidden !important;
+    overflow-y: visible;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * 每一个 filter group 都允许缩小。
+   */
+  :global(.pagefind-ui__filter-group) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow-x: hidden !important;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * Filter 本身不要撑宽。
+   */
+  :global(.pagefind-ui__filter) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow-x: hidden !important;
+    overflow-wrap: anywhere;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * 标签容器：
+   * 不再保持 nowrap，超长文字自动换行。
+   */
+  :global(.pagefind-ui__filter-value) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+  }
+
+  /*
+   * 标签内部元素同样允许缩小。
+   */
+  :global(.pagefind-ui__filter-value-inner) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+  }
+
+  /*
+   * 标签文字不要强制一行。
+   */
+  :global(.pagefind-ui__filter-value-label) {
+    max-width: 100%;
+    min-width: 0;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * Pagefind filter 内部可能还有 flex 子元素。
+   * 这是解决“看起来明明有空间却出现横向滚动”的关键。
+   */
+  :global(.pagefind-ui__filter-value > *),
+  :global(.pagefind-ui__filter-value-inner > *) {
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * 如果 Pagefind 给标签设置了固定宽度，
+   * 这里强制它重新适应父容器。
+   */
+  :global(.pagefind-ui__filter-value[style]),
+  :global(.pagefind-ui__filter-value-inner[style]) {
+    max-width: 100% !important;
+  }
+
+  /* =========================
+     Mobile
+     ========================= */
+
+  @media (max-width: 640px) {
+    .dialog-frame {
+      width: calc(100% - 24px);
+      max-width: calc(100% - 24px);
+      max-height: 88vh;
+    }
+
+    .search-container {
+      padding: 16px;
+    }
+
+    :global(.pagefind-ui__filter-value) {
+      font-size: 0.9rem;
+    }
   }
 </style>
 
@@ -281,93 +538,276 @@ export const prerender = true;
 
     constructor() {
       super();
-      this.handleOpenModal = this.handleOpenModal.bind(this);
-      this.handleCloseModal = this.handleCloseModal.bind(this);
-      this.handleWindowKeydown = this.handleWindowKeydown.bind(this);
-      this.handleDialogClick = this.handleDialogClick.bind(this);
+
+      this.handleOpenModal =
+        this.handleOpenModal.bind(this);
+
+      this.handleCloseModal =
+        this.handleCloseModal.bind(this);
+
+      this.handleWindowKeydown =
+        this.handleWindowKeydown.bind(this);
+
+      this.handleDialogClick =
+        this.handleDialogClick.bind(this);
     }
 
     private handleOpenModal = () => {
       this.dialog?.showModal();
+
       document.body.style.overflow = "hidden";
-      window.addEventListener("click", this.handleDialogClick);
+
+      window.addEventListener(
+        "click",
+        this.handleDialogClick
+      );
     };
 
     private handleCloseModal = () => {
       this.dialog?.close();
-      document.body.style.overflow = "auto";
-      window.removeEventListener("click", this.handleDialogClick);
+
+      document.body.style.overflow = "";
+
+      window.removeEventListener(
+        "click",
+        this.handleDialogClick
+      );
     };
 
-    private handleWindowKeydown = (event: KeyboardEvent) => {
-      if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+    private handleWindowKeydown = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key.toLowerCase() === "k" &&
+        (event.ctrlKey || event.metaKey)
+      ) {
         event.preventDefault();
         this.handleOpenModal();
       }
 
-      if (event.key === "Escape") {
+      if (
+        event.key === "Escape" &&
+        this.dialog?.open
+      ) {
         this.handleCloseModal();
       }
     };
 
-    private handleDialogClick = (event: MouseEvent) => {
+    private handleDialogClick = (
+      event: MouseEvent
+    ) => {
       if (event.target === this.dialog) {
         this.handleCloseModal();
       }
     };
 
     connectedCallback() {
-      this.dialog = this.querySelector("[data-dialog]") as HTMLDialogElement;
-      this.closeBtn = this.querySelector("[data-close-modal]") as HTMLButtonElement;
-      this.openBtn = this.querySelector("[data-open-modal]") as HTMLButtonElement;
+      this.dialog =
+        this.querySelector(
+          "[data-dialog]"
+        ) as HTMLDialogElement;
+
+      this.closeBtn =
+        this.querySelector(
+          "[data-close-modal]"
+        ) as HTMLButtonElement;
+
+      this.openBtn =
+        this.querySelector(
+          "[data-open-modal]"
+        ) as HTMLButtonElement;
 
       if (this.openBtn) {
-        this.openBtn.addEventListener("click", this.handleOpenModal);
+        this.openBtn.addEventListener(
+          "click",
+          this.handleOpenModal
+        );
+
         this.openBtn.disabled = false;
       }
 
       if (this.closeBtn) {
-        this.closeBtn.addEventListener("click", this.handleCloseModal);
+        this.closeBtn.addEventListener(
+          "click",
+          this.handleCloseModal
+        );
       }
 
-      window.addEventListener("keydown", this.handleWindowKeydown);
+      window.addEventListener(
+        "keydown",
+        this.handleWindowKeydown
+      );
 
-      // 加载 Pagefind UI（在生产环境）
+      /*
+       * Pagefind 只在生产环境加载。
+       */
       if (!import.meta.env.DEV) {
         this.loadPagefindUI();
       }
     }
 
     private async loadPagefindUI() {
-      const onIdle = window.requestIdleCallback || ((cb: FrameRequestCallback) => setTimeout(cb, 1));
+      const onIdle =
+        window.requestIdleCallback ||
+        ((cb: FrameRequestCallback) =>
+          setTimeout(cb, 1));
+
       onIdle(async () => {
         try {
-          const { PagefindUI } = await import("@pagefind/default-ui");
+          const { PagefindUI } =
+            await import("@pagefind/default-ui");
+
           new PagefindUI({
             baseUrl: import.meta.env.BASE_URL,
-            bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
+
+            bundlePath:
+              import.meta.env.BASE_URL.replace(
+                /\/$/,
+                ""
+              ) + "/pagefind/",
+
             element: "#pagefind",
             showImages: false,
+
+            /*
+             * Pagefind 自己生成的文字也根据当前语言切换。
+             */
+            translations: isEnglish
+              ? {
+                  placeholder: "Search...",
+
+                  zero_results:
+                    'No results for "[SEARCH_TERM]"',
+
+                  many_results:
+                    '[COUNT] results for "[SEARCH_TERM]"',
+
+                  one_result:
+                    '1 result for "[SEARCH_TERM]"',
+
+                  alt_search: "Search",
+
+                  search_label:
+                    "Search this site",
+
+                  filters_label: "Filters",
+
+                  filter_label:
+                    "Filter by [FILTER]",
+
+                  load_more: "Load more",
+
+                  clear_search:
+                    "Clear search",
+
+                  clear_filters:
+                    "Clear filters",
+
+                  select_filter:
+                    "Select [FILTER]",
+
+                  select_filter_label:
+                    "Select a filter",
+                }
+              : {
+                  placeholder: "搜索...",
+
+                  zero_results:
+                    '没有找到与“[SEARCH_TERM]”相关的结果',
+
+                  many_results:
+                    '找到 [COUNT] 个与“[SEARCH_TERM]”相关的结果',
+
+                  one_result:
+                    '找到 1 个与“[SEARCH_TERM]”相关的结果',
+
+                  alt_search: "搜索",
+
+                  search_label:
+                    "搜索本站内容",
+
+                  filters_label: "筛选",
+
+                  filter_label:
+                    "按 [FILTER] 筛选",
+
+                  load_more: "加载更多",
+
+                  clear_search:
+                    "清除搜索",
+
+                  clear_filters:
+                    "清除筛选",
+
+                  select_filter:
+                    "选择 [FILTER]",
+
+                  select_filter_label:
+                    "选择筛选条件",
+                },
           });
         } catch (error) {
-          console.error("Failed to load Pagefind:", error);
+          console.error(
+            "Failed to load Pagefind:",
+            error
+          );
+
           this.showDevNotice();
         }
       });
     }
 
     private showDevNotice() {
-      const pagefindEl = document.getElementById('pagefind');
-      if (pagefindEl) {
-        pagefindEl.innerHTML = '<div style="padding: 16px; color: var(--text-muted); text-align: center; font-size: 0.9rem;">⚠️ 搜索功能需要生产构建。请运行 <code style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace;">npm run build</code></div>';
+      const pagefindEl =
+        document.getElementById("pagefind");
+
+      if (!pagefindEl) {
+        return;
       }
+
+      pagefindEl.innerHTML = `
+        <div
+          style="
+            padding: 16px;
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.9rem;
+          "
+        >
+          ⚠️ 搜索功能需要生产构建。
+          <br />
+          请运行
+          <code
+            style="
+              background: rgba(0,0,0,0.05);
+              padding: 2px 6px;
+              border-radius: 4px;
+              font-family: monospace;
+            "
+          >
+            npm run build
+          </code>
+        </div>
+      `;
     }
 
     disconnectedCallback() {
-      window.removeEventListener("keydown", this.handleWindowKeydown);
-      window.removeEventListener("click", this.handleDialogClick);
+      window.removeEventListener(
+        "keydown",
+        this.handleWindowKeydown
+      );
+
+      window.removeEventListener(
+        "click",
+        this.handleDialogClick
+      );
     }
   }
 
-  customElements.define("site-search", SiteSearch);
+  if (!customElements.get("site-search")) {
+    customElements.define(
+      "site-search",
+      SiteSearch
+    );
+  }
 </script>

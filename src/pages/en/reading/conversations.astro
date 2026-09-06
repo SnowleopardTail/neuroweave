@@ -115,20 +115,23 @@ const allTags = Array.from(
 <style>
   .translations-container {
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     gap: 32px;
+    width: 100%;
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 16px;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow-x: hidden;
   }
 
   .content-area {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
-  }
-
-  .search-section {
-    position: relative;
-    margin-bottom: 32px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .articles-list {
@@ -149,6 +152,9 @@ const allTags = Array.from(
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .article-card:hover {
@@ -159,6 +165,8 @@ const allTags = Array.from(
   .card-header {
     background-color: var(--card-header-bg, #F0E2B4);
     padding: 14px 18px;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .card-header h3 {
@@ -167,6 +175,8 @@ const allTags = Array.from(
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--text-primary);
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .meta {
@@ -178,12 +188,16 @@ const allTags = Array.from(
   .card-body {
     background-color: var(--bg-card);
     padding: 20px;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .excerpt {
     margin: 0 0 12px 0;
     color: var(--text-muted);
     line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .tags-inline {
@@ -191,6 +205,7 @@ const allTags = Array.from(
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 12px;
+    min-width: 0;
   }
 
   .tag-badge {
@@ -200,12 +215,18 @@ const allTags = Array.from(
     border-radius: 6px;
     font-size: 0.8rem;
     color: var(--text-muted);
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .read-links {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+    min-width: 0;
   }
 
   .read-more {
@@ -214,6 +235,9 @@ const allTags = Array.from(
     font-weight: 600;
     transition: transform 0.2s ease, color 0.2s ease;
     display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .read-more:hover {
@@ -228,12 +252,24 @@ const allTags = Array.from(
 
   /* 侧边栏 */
   .sidebar {
-    width: 220px;
-    flex-shrink: 0;
+    flex: 0 0 260px;
+    width: 260px;
+    max-width: 260px;
+    min-width: 0;
+    box-sizing: border-box;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .search-section {
+    position: relative;
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .tag-filter {
@@ -243,8 +279,13 @@ const allTags = Array.from(
     border: 1px solid var(--accent-border);
     position: sticky;
     top: 20px;
-    aspect-ratio: 1 / 1;
-    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .tag-filter h3 {
@@ -258,13 +299,23 @@ const allTags = Array.from(
     display: flex;
     flex-wrap: wrap;
     gap: 6px 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .tag-link {
     color: var(--text-primary);
     text-decoration: none;
     font-size: 0.85rem;
-    white-space: nowrap;
+    white-space: normal;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     transition: color 0.2s ease;
   }
 
@@ -281,15 +332,30 @@ const allTags = Array.from(
   @media (max-width: 768px) {
     .translations-container {
       flex-direction: column;
+      gap: 24px;
+    }
+
+    .content-area {
+      width: 100%;
+      max-width: 100%;
     }
 
     .sidebar {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      flex: none;
+    }
+
+    .search-section {
+      width: 100%;
+      max-width: 100%;
     }
 
     .tag-filter {
       position: static;
-      aspect-ratio: auto;
+      width: 100%;
+      max-width: 100%;
     }
   }
 </style>
