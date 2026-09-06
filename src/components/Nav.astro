@@ -59,7 +59,7 @@ const languageSwitchPath = isEnglish
       {navItems.map((item, index) => (
         <>
           <a href={item.href}>{item.label}</a>
-          {index < navItems.length - 1 && <span>｜</span>}
+          {index < navItems.length - 1 && <span class="divider">｜</span>}
         </>
       ))}
     </div>
@@ -122,6 +122,7 @@ const languageSwitchPath = isEnglish
 
     box-sizing: border-box;
     border-bottom: 1px solid var(--accent-border);
+    width: 100%;
   }
 
   nav .page-width {
@@ -130,6 +131,8 @@ const languageSwitchPath = isEnglish
     align-items: center;
     justify-content: space-between;
     gap: 10px 16px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .nav-links {
@@ -170,6 +173,7 @@ const languageSwitchPath = isEnglish
     padding: 4px 10px;
     border: 1px solid var(--accent-border);
     border-radius: 6px;
+    text-decoration: none;
   }
 
   /* 控制按钮 */
@@ -203,38 +207,46 @@ const languageSwitchPath = isEnglish
   }
 
   /* ==========================================
-     移动端优化 ( Mobile Layout Optimization )
+     移动端响应式布局 ( Mobile Layout )
      ========================================== */
   @media (max-width: 768px) {
     nav {
-      padding: 10px 0;
+      padding: 12px 16px;
     }
 
     nav .page-width {
       flex-direction: column;
       align-items: stretch;
-      gap: 10px;
+      gap: 12px;
+      width: 100%;
     }
 
-    /* 1. 链接区：改为单行横向平滑滚动，防止挤压折行 */
+    /* 1. 导航链接：自然多行排列，去除容易破坏间距的竖线 */
     .nav-links {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 4px;
-      scrollbar-width: none; /* Firefox */
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 10px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    .nav-links::-webkit-scrollbar {
-      display: none; /* Chrome / Safari */
+    .nav-links .divider {
+      display: none;
     }
 
-    /* 2. 操作区：使用弹性网格，自动按按钮数量均分整行 */
+    .nav-links a {
+      font-size: 0.88rem;
+      padding: 2px 4px;
+    }
+
+    /* 2. 操作按钮：2列自适应网格，在视口内对称平分整行 */
     .nav-actions {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       width: 100%;
+      box-sizing: border-box;
     }
 
     .language-switch,
@@ -246,12 +258,11 @@ const languageSwitchPath = isEnglish
       justify-content: center;
       text-align: center;
       padding: 6px 4px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       width: 100%;
       box-sizing: border-box;
+      margin: 0;
     }
   }
 </style>
