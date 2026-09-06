@@ -1,383 +1,638 @@
 ---
+
 const currentPath = Astro.url.pathname;
+
 const isEnglish = currentPath.startsWith('/en');
 
+
+
 const navItems = isEnglish
-  ? [
-      { href: '/en/', label: 'Home' },
-      { href: '/en/about', label: 'About' },
-      { href: '/en/reading/translations', label: 'NW Translation' },
-      { href: '/en/reading/overviews', label: 'NW Overview' },
-      { href: '/en/reading/conversations', label: 'NW Conversations' },
-      { href: '/en/keywords', label: 'Keywords' },
-      { href: '/en/feedback', label: 'Feedback' },
-    ]
-  : [
-      { href: '/', label: '首页' },
-      { href: '/about', label: '关于我们' },
-      { href: '/reading/translations', label: 'NW 翻译' },
-      { href: '/reading/overviews', label: 'NW 概述' },
-      { href: '/reading/conversations', label: 'NW 访谈' },
-      { href: '/keywords', label: '关键词整理' },
-      { href: '/feedback', label: '反馈' },
-    ];
+
+? [
+
+{ href: '/en/', label: 'Home' },
+
+{ href: '/en/about', label: 'About' },
+
+{ href: '/en/reading/translations', label: 'NW Translation' },
+
+{ href: '/en/reading/overviews', label: 'NW Overview' },
+
+{ href: '/en/reading/conversations', label: 'NW Conversations' },
+
+{ href: '/en/keywords', label: 'Keywords' },
+
+{ href: '/en/feedback', label: 'Feedback' },
+
+]
+
+: [
+
+{ href: '/', label: '首页' },
+
+{ href: '/about', label: '关于我们' },
+
+{ href: '/reading/translations', label: 'NW 翻译' },
+
+{ href: '/reading/overviews', label: 'NW 概述' },
+
+{ href: '/reading/conversations', label: 'NW 访谈' },
+
+{ href: '/keywords', label: '关键词整理' },
+
+{ href: '/feedback', label: '反馈' },
+
+];
+
+
 
 /*
- * Language switch
- *
- * 中文页面：
- * /about
- * → /en/about
- *
- * 英文页面：
- * /en/about
- * → /about
- *
- * 首页特殊处理：
- * /
- * → /en/
- *
- * /en/
- * → /
- */
+
+* Language switch
+
+*
+
+* 中文页面：
+
+* /about
+
+* → /en/about
+
+*
+
+* 英文页面：
+
+* /en/about
+
+* → /about
+
+*
+
+* 首页特殊处理：
+
+* /
+
+* → /en/
+
+*
+
+* /en/
+
+* → /
+
+*/
+
 const languageSwitchPath = isEnglish
-  ? (
-      currentPath === '/en' || currentPath === '/en/'
-        ? '/'
-        : currentPath.replace(/^\/en/, '')
-    )
-  : (
-      currentPath === '/'
-        ? '/en/'
-        : `/en${currentPath}`
-    );
+
+? (
+
+currentPath === '/en' || currentPath === '/en/'
+
+? '/'
+
+: currentPath.replace(/^\/en/, '')
+
+)
+
+: (
+
+currentPath === '/'
+
+? '/en/'
+
+: `/en${currentPath}`
+
+);
+
 ---
 
+
+
 <nav>
-  <div class="page-width">
-    <div class="nav-links">
-      {navItems.map((item, index) => (
-        <>
-          <a href={item.href}>{item.label}</a>
-          {index < navItems.length - 1 && <span class="divider">｜</span>}
-        </>
-      ))}
-    </div>
 
-    <div class="nav-actions">
-      <!-- Language -->
-      <a
-        class="language-switch"
-        href={languageSwitchPath}
-        aria-label={isEnglish ? '切换到中文' : 'Switch to English'}
-      >
-        {isEnglish ? '中文' : 'English'}
-      </a>
+<div class="page-width">
 
-      <!-- Font -->
-      <button
-        type="button"
-        class="font-toggle-btn"
-        id="font-toggle-btn"
-        aria-pressed="false"
-      >
-        {isEnglish ? 'Sans-serif' : '无衬线'}
-      </button>
+<div class="nav-links">
 
-      <!-- Bionic Reading：只有英文显示 -->
-      {isEnglish && (
-        <button
-          type="button"
-          class="bionic-toggle-btn"
-          id="bionic-toggle-btn"
-          aria-pressed="false"
-        >
-          Bionic Reading
-        </button>
-      )}
+{navItems.map((item, index) => (
 
-      <!-- Sensory Mode -->
-      <button
-        type="button"
-        class="theme-toggle-btn"
-        id="theme-toggle-btn"
-        aria-pressed="false"
-      >
-        {isEnglish ? 'Sensory Mode' : '暗色模式'}
-      </button>
-    </div>
-  </div>
+<>
+
+<a href={item.href}>{item.label}</a>
+
+{index < navItems.length - 1 && <span>｜</span>}
+
+</>
+
+))}
+
+</div>
+
+
+
+<div class="nav-actions">
+
+<!-- Language -->
+
+<a
+
+class="language-switch"
+
+href={languageSwitchPath}
+
+aria-label={isEnglish ? '切换到中文' : 'Switch to English'}
+
+>
+
+{isEnglish ? '中文' : 'English'}
+
+</a>
+
+
+
+<!-- Font -->
+
+<button
+
+type="button"
+
+class="font-toggle-btn"
+
+id="font-toggle-btn"
+
+aria-pressed="false"
+
+>
+
+{isEnglish ? 'Sans-serif' : '无衬线'}
+
+</button>
+
+
+
+<!-- Bionic Reading：只有英文显示 -->
+
+{isEnglish && (
+
+<button
+
+type="button"
+
+class="bionic-toggle-btn"
+
+id="bionic-toggle-btn"
+
+aria-pressed="false"
+
+>
+
+Bionic Reading
+
+</button>
+
+)}
+
+
+
+<!-- Sensory Mode -->
+
+<button
+
+type="button"
+
+class="theme-toggle-btn"
+
+id="theme-toggle-btn"
+
+aria-pressed="false"
+
+>
+
+{isEnglish ? 'Sensory Mode' : '暗色模式'}
+
+</button>
+
+</div>
+
+</div>
+
 </nav>
 
+
+
 <style>
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-    isolation: isolate;
 
-    background-color: var(--bg-nav);
-    padding: 16px 0;
-    font-size: 0.95rem;
+nav {
 
-    box-sizing: border-box;
-    border-bottom: 1px solid var(--accent-border);
-    width: 100%;
-  }
+position: sticky;
 
-  nav .page-width {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px 16px;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
+top: 0;
 
-  .nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-  }
+z-index: 9999;
 
-  .nav-links a,
-  .nav-links span {
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+isolation: isolate;
 
-  nav a {
-    color: var(--text-primary);
-    text-decoration: none;
-    font-weight: 600;
-  }
 
-  nav a:hover {
-    text-decoration: underline;
-  }
 
-  nav span {
-    color: #B5A886;
-    user-select: none;
-  }
+background-color: var(--bg-nav);
 
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+padding: 16px 0;
 
-  .language-switch {
-    padding: 4px 10px;
-    border: 1px solid var(--accent-border);
-    border-radius: 6px;
-    text-decoration: none;
-  }
+font-size: 0.95rem;
 
-  /* 控制按钮 */
-  .font-toggle-btn,
-  .bionic-toggle-btn,
-  .theme-toggle-btn {
-    background-color: transparent;
-    border: 1px solid var(--accent-border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-family: var(--font-serif);
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
 
-  .font-toggle-btn:hover,
-  .bionic-toggle-btn:hover,
-  .theme-toggle-btn:hover {
-    border-color: var(--text-primary);
-  }
 
-  .font-toggle-btn[aria-pressed="true"],
-  .bionic-toggle-btn[aria-pressed="true"],
-  .theme-toggle-btn[aria-pressed="true"] {
-    background-color: var(--text-primary);
-    color: var(--bg-card);
-    border-color: var(--text-primary);
-  }
+box-sizing: border-box;
 
-  /* ==========================================
-     移动端响应式布局 ( Mobile Layout )
-     ========================================== */
-  @media (max-width: 768px) {
-    nav {
-      padding: 12px 16px;
-    }
+border-bottom: 1px solid var(--accent-border);
 
-    nav .page-width {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 12px;
-      width: 100%;
-    }
+}
 
-    /* 1. 导航链接：自然多行排列，去除容易破坏间距的竖线 */
-    .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
 
-    .nav-links .divider {
-      display: none;
-    }
 
-    .nav-links a {
-      font-size: 0.88rem;
-      padding: 2px 4px;
-    }
+nav .page-width {
 
-    /* 2. 操作按钮：2列自适应网格，在视口内对称平分整行 */
-    .nav-actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      width: 100%;
-      box-sizing: border-box;
-    }
+display: flex;
 
-    .language-switch,
-    .font-toggle-btn,
-    .bionic-toggle-btn,
-    .theme-toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 6px 4px;
-      font-size: 0.8rem;
-      white-space: nowrap;
-      width: 100%;
-      box-sizing: border-box;
-      margin: 0;
-    }
-  }
+flex-wrap: wrap;
+
+align-items: center;
+
+justify-content: space-between;
+
+gap: 10px 16px;
+
+}
+
+
+
+.nav-links {
+
+display: flex;
+
+flex-wrap: wrap;
+
+align-items: center;
+
+gap: 8px 12px;
+
+}
+
+
+
+.nav-links a,
+
+.nav-links span {
+
+white-space: nowrap;
+
+flex-shrink: 0;
+
+}
+
+
+
+nav a {
+
+color: var(--text-primary);
+
+text-decoration: none;
+
+font-weight: 600;
+
+}
+
+
+
+nav a:hover {
+
+text-decoration: underline;
+
+}
+
+
+
+nav span {
+
+color: #B5A886;
+
+user-select: none;
+
+}
+
+
+
+.nav-actions {
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+}
+
+
+
+.language-switch {
+
+padding: 4px 10px;
+
+border: 1px solid var(--accent-border);
+
+border-radius: 6px;
+
+}
+
+
+
+/* 控制按钮 */
+
+.font-toggle-btn,
+
+.bionic-toggle-btn,
+
+.theme-toggle-btn {
+
+background-color: transparent;
+
+border: 1px solid var(--accent-border);
+
+border-radius: 6px;
+
+padding: 4px 10px;
+
+font-family: var(--font-serif);
+
+font-size: 0.85rem;
+
+font-weight: 600;
+
+color: var(--text-primary);
+
+cursor: pointer;
+
+transition: all 0.2s ease;
+
+}
+
+
+
+.font-toggle-btn:hover,
+
+.bionic-toggle-btn:hover,
+
+.theme-toggle-btn:hover {
+
+border-color: var(--text-primary);
+
+}
+
+
+
+.font-toggle-btn[aria-pressed="true"],
+
+.bionic-toggle-btn[aria-pressed="true"],
+
+.theme-toggle-btn[aria-pressed="true"] {
+
+background-color: var(--text-primary);
+
+color: var(--bg-card);
+
+border-color: var(--text-primary);
+
+}
+
 </style>
 
+
+
 <script>
-  const themeBtn = document.getElementById('theme-toggle-btn');
-  const fontBtn = document.getElementById('font-toggle-btn');
-  const bionicBtn = document.getElementById('bionic-toggle-btn');
 
-  function syncButtonState() {
-    themeBtn?.setAttribute(
-      'aria-pressed',
-      String(
-        document.documentElement.classList.contains(
-          'sensory-theme'
-        )
-      )
-    );
+const themeBtn = document.getElementById('theme-toggle-btn');
 
-    fontBtn?.setAttribute(
-      'aria-pressed',
-      String(
-        document.documentElement.classList.contains(
-          'sans-serif-theme'
-        )
-      )
-    );
+const fontBtn = document.getElementById('font-toggle-btn');
 
-    if (bionicBtn) {
-      bionicBtn.setAttribute(
-        'aria-pressed',
-        String(
-          document.documentElement.classList.contains(
-            'bionic-theme'
-          )
-        )
-      );
-    }
-  }
-
-  syncButtonState();
+const bionicBtn = document.getElementById('bionic-toggle-btn');
 
 
-  // =========================
-  // Sensory Mode
-  // =========================
 
-  themeBtn?.addEventListener('click', () => {
-    const enabled =
-      !document.documentElement.classList.contains(
-        'sensory-theme'
-      );
+function syncButtonState() {
 
-    document.documentElement.classList.toggle(
-      'sensory-theme',
-      enabled
-    );
+themeBtn?.setAttribute(
 
-    localStorage.setItem(
-      'nw-sensory-theme',
-      String(enabled)
-    );
+'aria-pressed',
 
-    syncButtonState();
-  });
+String(
+
+document.documentElement.classList.contains(
+
+'sensory-theme'
+
+)
+
+)
+
+);
 
 
-  // =========================
-  // Font
-  // =========================
 
-  fontBtn?.addEventListener('click', () => {
-    const enabled =
-      !document.documentElement.classList.contains(
-        'sans-serif-theme'
-      );
+fontBtn?.setAttribute(
 
-    document.documentElement.classList.toggle(
-      'sans-serif-theme',
-      enabled
-    );
+'aria-pressed',
 
-    localStorage.setItem(
-      'nw-sans-serif-theme',
-      String(enabled)
-    );
+String(
 
-    syncButtonState();
-  });
+document.documentElement.classList.contains(
+
+'sans-serif-theme'
+
+)
+
+)
+
+);
 
 
-  // =========================
-  // Bionic Reading
-  // =========================
 
-  bionicBtn?.addEventListener('click', () => {
-    const enabled =
-      !document.documentElement.classList.contains(
-        'bionic-theme'
-      );
+if (bionicBtn) {
 
-    document.documentElement.classList.toggle(
-      'bionic-theme',
-      enabled
-    );
+bionicBtn.setAttribute(
 
-    localStorage.setItem(
-      'nw-bionic-theme',
-      String(enabled)
-    );
+'aria-pressed',
 
-    syncButtonState();
+String(
 
-    window.dispatchEvent(
-      new CustomEvent('nw-update-bionic')
-    );
-  });
+document.documentElement.classList.contains(
+
+'bionic-theme'
+
+)
+
+)
+
+);
+
+}
+
+}
+
+
+
+syncButtonState();
+
+
+
+
+
+// =========================
+
+// Sensory Mode
+
+// =========================
+
+
+
+themeBtn?.addEventListener('click', () => {
+
+const enabled =
+
+!document.documentElement.classList.contains(
+
+'sensory-theme'
+
+);
+
+
+
+document.documentElement.classList.toggle(
+
+'sensory-theme',
+
+enabled
+
+);
+
+
+
+localStorage.setItem(
+
+'nw-sensory-theme',
+
+String(enabled)
+
+);
+
+
+
+syncButtonState();
+
+});
+
+
+
+
+
+// =========================
+
+// Font
+
+// =========================
+
+
+
+fontBtn?.addEventListener('click', () => {
+
+const enabled =
+
+!document.documentElement.classList.contains(
+
+'sans-serif-theme'
+
+);
+
+
+
+document.documentElement.classList.toggle(
+
+'sans-serif-theme',
+
+enabled
+
+);
+
+
+
+localStorage.setItem(
+
+'nw-sans-serif-theme',
+
+String(enabled)
+
+);
+
+
+
+syncButtonState();
+
+});
+
+
+
+
+
+// =========================
+
+// Bionic Reading
+
+// =========================
+
+
+
+bionicBtn?.addEventListener('click', () => {
+
+const enabled =
+
+!document.documentElement.classList.contains(
+
+'bionic-theme'
+
+);
+
+
+
+document.documentElement.classList.toggle(
+
+'bionic-theme',
+
+enabled
+
+);
+
+
+
+localStorage.setItem(
+
+'nw-bionic-theme',
+
+String(enabled)
+
+);
+
+
+
+syncButtonState();
+
+
+
+window.dispatchEvent(
+
+new CustomEvent('nw-update-bionic')
+
+);
+
+});
+
 </script>
+
