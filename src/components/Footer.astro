@@ -33,7 +33,7 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
         {isEnglish ? 'Weibo' : '微博'}
       </a>
 
-      <button type="button" class="wechat-button" id="wechat-button">
+      <button type="button" class="wechat-button" id="wechat-button" data-open-wechat>
         {isEnglish ? 'WeChat Official Account' : '微信公众号'}
       </button>
     </div>
@@ -229,7 +229,7 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
 </style>
 
 <script>
-  const wechatButton = document.getElementById('wechat-button');
+  const wechatButtons = document.querySelectorAll('[data-open-wechat]');
   const wechatModal = document.getElementById('wechat-modal');
   const wechatClose = document.getElementById('wechat-close');
   const wechatBackdrop = document.getElementById('wechat-modal-backdrop');
@@ -250,7 +250,9 @@ const isEnglish = Astro.url.pathname.startsWith('/en');
     document.body.style.overflow = '';
   }
 
-  wechatButton?.addEventListener('click', openWechatModal);
+  wechatButtons.forEach((button) => {
+    button.addEventListener('click', openWechatModal);
+  });
   wechatClose?.addEventListener('click', closeWechatModal);
   wechatBackdrop?.addEventListener('click', closeWechatModal);
 

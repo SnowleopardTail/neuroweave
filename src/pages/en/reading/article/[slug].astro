@@ -198,7 +198,7 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
 
 <style>
   .article-container {
-    max-width: 760px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 16px;
   }
@@ -379,11 +379,13 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
     line-height: 1.9;
     margin: 0;
     font-size: calc(1.05rem * var(--content-scale, 1));
+    font-weight: var(--content-font-weight);
   }
 
   :global(.markdown-content h1) {
     font-size: 1.8rem;
     font-weight: 700;
+    color: var(--text-primary);
     margin-top: 40px;
     margin-bottom: 20px;
     letter-spacing: 0.02em;
@@ -392,6 +394,7 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
   :global(.markdown-content h2) {
     font-size: 1.4rem;
     font-weight: 700;
+    color: var(--text-primary);
     margin-top: 36px;
     margin-bottom: 16px;
     letter-spacing: 0.02em;
@@ -400,6 +403,7 @@ const contentLabel = article.isEasyRead ? 'Easy Read' : typeLabel;
   :global(.markdown-content h3) {
     font-size: 1.15rem;
     font-weight: 700;
+    color: var(--text-primary);
     margin-top: 28px;
     margin-bottom: 12px;
   }

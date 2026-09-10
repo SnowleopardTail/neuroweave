@@ -195,7 +195,7 @@ const WorkstyleContent = workstyleEntry?.default;
   }
 
   .team-content :global(.team-member) {
-    background-color: #fffef7;
+    background-color: var(--team-card-bg);
     border: 1px solid var(--accent-border);
     border-radius: 10px;
     padding: 16px 20px;
@@ -209,11 +209,13 @@ const WorkstyleContent = workstyleEntry?.default;
   .team-content :global(.team-member p) {
     margin: 0;
     line-height: 1.8;
-    color: var(--text-primary);
+    color: var(--team-card-text);
   }
 
   .team-content :global(.team-member strong) {
     font-size: 1.05rem;
+    color: var(--team-card-text);
+    font-weight: 700;
   }
 
   .partners-grid {

@@ -91,13 +91,9 @@ const surveys = [
           Weibo
         </a>
 
-        <a
-          href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <button type="button" class="wechat-link" data-open-wechat>
           WeChat Official Account
-        </a>
+        </button>
       </div>
     </section>
   </main>
@@ -210,7 +206,18 @@ const surveys = [
     font-weight: 600;
   }
 
-  .social-links a:hover {
+  .wechat-link {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: var(--text-primary);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .social-links a:hover,
+  .wechat-link:hover {
     text-decoration: underline;
   }
 

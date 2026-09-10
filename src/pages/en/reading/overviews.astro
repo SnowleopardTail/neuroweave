@@ -65,6 +65,7 @@ const allTags = Array.from(
             return (
               <article
                 class="article-card"
+                data-href={`/en/reading/article/${article.slug}`}
                 data-tags={tagsStr}
                 data-content={searchContent}
               >
@@ -79,19 +80,12 @@ const allTags = Array.from(
                   {article.tags && article.tags.length > 0 && (
                     <div class="tags-inline">
                       {article.tags.map((tag: string) => (
-                        <span class="tag-badge">#{tag}</span>
+                        <button type="button" class="tag-badge" data-tag={tag}>#{tag}</button>
                       ))}
                     </div>
                   )}
 
                   <div class="read-links">
-                    <a
-                      href={`/en/reading/article/${article.slug}`}
-                      class="read-more"
-                    >
-                      Read full article →
-                    </a>
-
                     <a
                       href={`/en/reading/article/${article.easyReadSlug || article.slug}`}
                       class="read-more read-more-secondary"
@@ -223,6 +217,15 @@ const allTags = Array.from(
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 
+  .article-card {
+    cursor: pointer;
+  }
+
+  .article-card:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 3px;
+  }
+
   .card-header {
     background-color: var(--card-header-bg, #F0E2B4);
     padding: 14px 18px;
@@ -302,6 +305,9 @@ const allTags = Array.from(
 
     overflow-wrap: anywhere;
     word-break: break-word;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
   }
 
   /* =========================
@@ -532,4 +538,36 @@ const allTags = Array.from(
 
   // Initial filter to show all articles on page load
   filterArticles();
+  document.querySelectorAll('.tag-badge').forEach((badge) => {
+    badge.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const tag = badge.getAttribute('data-tag');
+      const matchingLink = Array.from(tagLinks).find(
+        (link) => link.getAttribute('data-tag') === tag
+      );
+      matchingLink?.click();
+    });
+  });
+
+  document.querySelectorAll('.article-card').forEach((card) => {
+    const navigateToArticle = () => {
+      const href = card.getAttribute('data-href');
+      if (href) window.location.href = href;
+    };
+
+    card.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a, button')) return;
+      navigateToArticle();
+    });
+
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        navigateToArticle();
+      }
+    });
+
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'link');
+  });
 </script>

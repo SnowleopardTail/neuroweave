@@ -407,10 +407,14 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
     --bg-nav: #F2EDD8;
     --bg-card: #F5EBCF;
     --card-header-bg: #EADCB8;
+    --team-card-bg: #fffef7;
+    --team-card-text: #2C2C2C;
 
     --text-primary: #2C2C2C;
     --text-muted: #6B6A65;
     --accent-border: rgba(70, 65, 50, 0.08);
+    --body-font-weight: 450;
+    --content-font-weight: 500;
 
   /* Serif：中文思源宋体 + 英文 Georgia */
    --font-serif:
@@ -430,25 +434,33 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
 
   :root.sans-serif-theme {
     --font-main: var(--font-sans);
+    --body-font-weight: 400;
+    --content-font-weight: 400;
   }
 
   :root.sensory-theme {
     --bg-main: #161B24;
     --bg-nav: #1E2430;
     --bg-card: #1E2430;
-    --text-primary: #93A8C7;
-    --text-muted: #6E7F98;
+    --team-card-bg: #253449;
+    --team-card-text: #E2EEFF;
+    --text-primary: #B7CBE8;
+    --text-muted: #92A9CB;
+    --text-bionic: #E5F0FF;
     --accent-border: rgba(255, 255, 255, 0.08);
     --badge-bg: #2A3B4D;
     --card-header-bg: #171B24;
   }
 
   .bionic-text {
-    font-weight: 600;
+    color: var(--text-bionic, var(--text-primary));
+    font-weight: 800;
+    -webkit-text-stroke: 0.15px currentColor;
   }
 
   main strong {
-    font-weight: 600;
+    color: var(--text-bionic, var(--text-primary));
+    font-weight: 800;
   }
 
   body {
@@ -456,6 +468,7 @@ const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'zh';
     padding: 0;
     font-family: var(--font-main);
     font-size: 1.05rem;
+    font-weight: var(--body-font-weight);
     color: var(--text-primary);
     background-color: var(--bg-main);
     line-height: 1.8;

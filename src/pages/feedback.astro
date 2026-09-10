@@ -57,7 +57,7 @@ const surveys = [
       <div class="social-links">
         <a href="https://www.xiaohongshu.com/user/profile/64ad11b5000000001c02bd17" target="_blank" rel="noopener noreferrer">小红书</a>
         <a href="https://weibo.com/u/6090388163" target="_blank" rel="noopener noreferrer">微博</a>
-        <a href="http://weixin.qq.com/r/mp/WREnP5bE8cuOrdJc90RL" target="_blank" rel="noopener noreferrer">微信公众号</a>
+        <button type="button" class="wechat-link" data-open-wechat>微信公众号</button>
       </div>
     </section>
   </main>
@@ -170,7 +170,18 @@ const surveys = [
     font-weight: 600;
   }
 
-  .social-links a:hover {
+  .wechat-link {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: var(--text-primary);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .social-links a:hover,
+  .wechat-link:hover {
     text-decoration: underline;
   }
 

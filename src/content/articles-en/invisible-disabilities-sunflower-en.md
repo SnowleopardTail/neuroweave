@@ -156,7 +156,7 @@ spaces with reduced risk of misunderstanding or invalidation,
 highlighting a practical response to the social and discursive
 invisibility of certain disabilities.
 
-### Perceived benefits and positive feedback
+### Perceived benefits and positive feedback 
 
 The scheme has been widely adopted by airlines and transport
 providers, often alongside training delivered in collaboration with
